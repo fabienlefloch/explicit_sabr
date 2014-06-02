@@ -16,7 +16,7 @@
 
 \markboth{Fabien {Le Floc'h}}{Draft}
 
-\title{Fast and Robust SABR Calibration through Simple Expansions}
+\title{Explicit SABR Calibration through Simple Expansions}
 \author{Fabien {Le Floc'h}$^\star$\thanks{{\em{Correspondence Address}}: Calypso Technology, 106 rue de La Bo\'{e}tie, 75008 Paris. Email: \texttt{fabien\_lefloch@calypso.com}}
 \affil{$^\star$Calypso Technology, 106 rue de La Bo\'{e}tie, 75008 Paris}}
 %
@@ -43,7 +43,6 @@ In contrast, the method proposed here consists in solving analytically a simple 
 
 
 \section{SABR normal and lognormal formulas}
-%The advantage to rely on the original formula is speed, as it is usually much faster to evaluate than the alternatives. For lognormal (Black) volatilities, we prefer the formula from Obloj \citep{obloj2008fine} as it is seen as more consistent. For normal (bpvol) volatilities, we rely on the Hagan formula in \citep{hagan2002managing} as it has no such inconsistency.
 
 \subsection{The SABR model}
 In the shifted SABR model, the asset forward follows the following stochastic equation:
@@ -56,7 +55,7 @@ and $F(0) = f$, $V(0) = \alpha$.
 $\nu$ represents the volatility of volatility, $b$ is a displacement allowing for negative rates ($b=0$ for the classic SABR model).
 
 \subsection{Normal formula}
-Taking into account the remarks from \citet{obloj2008fine} for the case of the lognormal formula to ensure consistency when $\beta \to 1$, the expansion of the normal volatility adapted from \citet{hagan2002managing} for the shifted SABR model is:
+Given the low rates environment we currently experience, it is now common practice to quote swaptions in terms of normal volatility (bpvol). Taking into account the remarks from \citet{obloj2008fine} for the case of the lognormal formula to ensure consistency when $\beta \to 1$, the expansion of the normal volatility adapted from \citet{hagan2002managing} for the shifted SABR model is:
 
 for $f \neq K$ and $\beta \in [0,1]$
 \begin{align}
@@ -138,41 +137,96 @@ For performance reasons, we prefer to rely on the normal formula if the calibrat
 
 \section{Explicit initial guess}
 \subsection{Lognormal volatility}
-The idea is to find $\alpha, \rho, \nu$ that matches the at-the-money implied volatility $\sigma_0$, skew $\sigma_0'$ and curvature $\sigma_0''$. Hagan formula would lead to a system of trivariate polynomials of degrees 3 and 4, which would then require a numerical method. Instead, we rely on simpler lower order lognormal volatility expansions obtained with the formula from \citep{lorig2014implied}. Applied to the shifted SABR model, their second order expansion of the implied volatility $v$ is $v = v_0 + v_1 + v_2$ where 
-%lorig formula for order 2 %
-\begin{align*}
-v_0 &= \alpha (f+b)^{\beta-1}\\
-v_1 &= \frac{1}{2}(\beta-1) z v_0 + \frac{1}{2}z\rho\nu+ \frac{1}{4}T\nu v_0(\rho v_0 - \nu)\\
-v_2 &= \frac{1}{96}(\beta-1)^2 v_0 \left(8z^2+T v_0 (4-T v_0^2)\right)\\
-&- \frac{1}{48}T(\beta-1)\nu v_0 \left(6z\nu+2(6-5z)\rho v_0 + T\rho v_0^3\right)\\
-&+ \frac{1}{96}T\nu^2 v_0 \left(32 + 5T\nu^2 - 12 \rho^2 + 2T v_0((6\rho^2-2)v_0-7\nu\rho) \right)\\
-&- \frac{1}{24}T\nu^2\rho (\nu-3\rho v_0) z+\frac{\nu^2(2-3\rho^2)}{12}z^2
-\end{align*}
- We use the order-0 expansion for the at-the-money implied volatility, the order-1 expansion for the at-the-money skew, and the order-2 for the at-the-money curvature and ignore terms quadratic in time to expiry $T^2$. Note that the derivatives are expressed in log-moneyness towards the variable $z=\log(\frac{K+b}{f+b})$ where $K$ is the strike and $f$ is the forward. We have then:
-\begin{align}
-\alpha &= \sigma_0 (f+b)^{1-\beta}\\
-\sigma_0' &= \frac{1}{2}\left(\rho \nu - (1-\beta)\sigma_0\right)\\
-\sigma_0'' &= \frac{1}{3\sigma_0}\nu^2+\frac{1}{6\sigma_0}\left((1-\beta)^2\sigma_0^2 + 3\rho^2\nu^2\right)
-\end{align} 
+The idea is to find $\alpha, \rho, \nu$ that matches the at-the-money implied volatility $\sigma_0$, skew $\sigma_0'$ and curvature $\sigma_0''$. A direct application of Hagan formula would lead to a system of trivariate polynomials of degrees 3 and 4, which would then require a numerical method. Instead, we rely a simple lower order expansion of the lognormal formula in the variable $z=\log\left(\frac{K+b}{f+b}\right)$ around $z=0$ that still captures the smile at-the-money accurately (see Appendix XXX):
 
+\begin{align}
+\sigma_B(z) &= \alpha (f+b)^{\beta-1} + \frac{1}{2}\left(\rho \nu - (1-\beta)\alpha (f+b)^{\beta-1}\right)z \nonumber\\
+&+ \frac{1}{12\alpha (f+b)^{\beta-1}}\left((1-\beta)^2(\alpha (f+b)^{\beta-1})^2 + \nu^2(2-3\rho^2)\right)z^2
+\end{align}
+
+This is the same expansion used in \citep[equation (3.1a)]{hagan2002managing} to explain the phenomenology and dynamic of the SABR model. We have then:
+% expansions obtained with the formula from \citep{lorig2014implied}. Applied to the shifted SABR model, their second order expansion of the implied volatility $v$ is $v = v_0 + v_1 + v_2$ where 
+%lorig formula for order 2 %
+%\begin{align*}
+%v_0 &= \alpha (f+b)^{\beta-1}\\
+%v_1 &= \frac{1}{2}(\beta-1) z v_0 + \frac{1}{2}z\rho\nu+ \frac{1}{4}T\nu v_0(\rho v_0 - \nu)\\
+%v_2 &= \frac{1}{96}(\beta-1)^2 v_0 \left(8z^2+T v_0 (4-T v_0^2)\right)\\
+%&- \frac{1}{48}T(\beta-1)\nu v_0 \left(6z\nu+2(6-5z)\rho v_0 + T\rho v_0^3\right)\\
+%&+ \frac{1}{96}T\nu^2 v_0 \left(32 + 5T\nu^2 - 12 \rho^2 + 2T v_0((6\rho^2-2)v_0-7\nu\rho) \right)\\
+%&- \frac{1}{24}T\nu^2\rho (\nu-3\rho v_0) z+\frac{\nu^2(2-3\rho^2)}{12}z^2
+%\end{align*}
+% We use the order-0 expansion for the at-the-money implied volatility, the order-1 expansion for the at-the-money skew, and the order-2 for the at-the-money curvature and ignore terms quadratic in time to expiry $T^2$. Note that the derivatives are expressed in log-moneyness towards the variable $z=\log(\frac{K+b}{f+b})$ where $K$ is the strike and $f$ is the forward. We have then:
+\begin{align}
+\begin{cases}
+\sigma_0 &= \alpha(f+b)^{\beta-1}\\
+\sigma_0' &= \frac{1}{2}\left(\rho \nu - (1-\beta)\sigma_0\right)\\
+\sigma_0'' &= \frac{1}{3\sigma_0}\nu^2+\frac{1}{6\sigma_0}\left((1-\beta)^2\sigma_0^2 - 3\rho^2\nu^2\right)
+\end{cases}
+\end{align} 
+Note that the derivatives are expressed in log-moneyness towards the variable $z=\log(\frac{K+b}{f+b})$ where $K$ is the strike and $f$ is the forward.
 This system can be exactly solved to give a first guess $\alpha_0, \rho_0,\nu_0$:
 \begin{align}
+  \begin{cases}
 \alpha_0 &=  \sigma_0 (f+b)^{1-\beta}\\
 \nu_0^2 &= 3\sigma_0\sigma_0''-\frac{1}{2}(1-\beta)^2\sigma_0^2+\frac{3}{2}\left(2\sigma_0'+(1-\beta)\sigma_0\right)^2 \\
-\rho_0 &= \frac{1}{\nu_0}\left(2\sigma_0'+(1-\beta)\sigma_0\right)          
+\rho_0 &= \frac{1}{\nu_0}\left(2\sigma_0'+(1-\beta)\sigma_0\right) 
+\end{cases} 
 \end{align}
 We make sure to constrain $\nu_0$ to be strictly positive (for example by flooring it to $10^{-4}$) , and $\rho_0$ to be in [-1,1]. We then refine this first guess by solving exactly for the at-the-money volatility with the given $\rho_0$ and $\nu_0$. $\alpha_1$ is the root of the following third order polynomial:
 \begin{align}
-\frac{(1-\beta)^2 T}{24 f^{2-2\beta}}\alpha^3+ \frac{\rho\beta\nu T}{4f^{1-\beta}}\alpha^2 + \left(1+\frac{2-3\rho^2}{24}\nu^2 T\right)\alpha - \sigma_0 f^{1-\beta} &= 0
+\frac{(1-\beta)^2 T}{24 (f+b)^{2-2\beta}}\alpha^3+ \frac{\rho\beta\nu T}{4(f+b)^{1-\beta}}\alpha^2 + \left(1+\frac{2-3\rho^2}{24}\nu^2 T\right)\alpha - \sigma_0 (f+b)^{1-\beta} &= 0
 \end{align}
-This is the same polynomial used by \citet{west2005calibration} to reduce the dimension of the calibration problem. $\alpha_1$ is picked as the smallest positive root. In theory, choosing the $\alpha_1$ closest to the previously calibrated $\alpha$ (either from the previous expiry, or from a previous day) could be better. In practice, it turns out to always be the smallest positive root. We then compute $\nu_1, \rho_1$ based on this new $\alpha_1$.
+This is the same polynomial used by \citet{west2005calibration} to reduce the dimension of the calibration problem. $\alpha_1$ is picked as the smallest positive root. In theory, choosing the $\alpha_1$ closest to the previously calibrated $\alpha$ (either from the previous expiry, or from a previous day) could be better. In practice, it turns out to always be the smallest positive root. 
+Our initial guess is then $(\alpha_1, \rho_0, \nu_0)$.
+%We then compute $\nu_1, \rho_1$ based on this new $\alpha_1$.
+%\begin{align}
+%\sigma_1 &=  \alpha_1 (f+b)^{\beta-1}\\
+%\nu_1^2 &= 3\sigma_1\sigma_0''-\frac{1}{2}(1-\beta)^2\sigma_1^2+\frac{3}{2}\left(2\sigma_0'+(1-\beta)\sigma_1\right)^2 \\
+%\rho_1 &= \frac{1}{\nu_1}\left(2\sigma_0'+(1-\beta)\sigma_1\right)          
+%\end{align}
+\subsection{Normal volatility}
+When the input volatilities are normal (bpvol), we can just convert them to equivalent lognormal volatilities (eventually relying on some accurate expansion of the normal volatility at-the-money), and apply the same method as in the previous section to find the initial guess. Instead, we prefer to work directly with normal volatility and derive a simple expansion of the normal formula in $z=\log\left(\frac{K+b}{f+b}\right)$ around $z=0$ (see Appendix XXX);
+
 \begin{align}
-\sigma_1 &=  \alpha_1 (f+b)^{\beta-1}\\
-\nu_1^2 &= 3\sigma_1\sigma_0''-\frac{1}{2}(1-\beta)^2\sigma_1^2+\frac{3}{2}\left(2\sigma_0'+(1-\beta)\sigma_1\right)^2 \\
-\rho_1 &= \frac{1}{\nu_1}\left(2\sigma_0'+(1-\beta)\sigma_1\right)          
+\sigma_N(z) &= \alpha (f+b)^\beta + \frac{1}{2}\left(\rho \nu (f+b)+\beta \alpha (f+b)^\beta \right)z\\
+&+ \left[\frac{1}{12\alpha (f+b)^{\beta-2}}(2\nu^2-3\rho^2 \nu^2)+\frac{1}{4} \rho \nu (f+b)+\frac{1}{12}(\beta^2+\beta)\alpha (f+b)^\beta \right]z^2
 \end{align}
 
-\subparagraph{How to find the at-the-money volatility, slope and curvature?} The simplest is to fit a parabola to the three closest points around the forward with coordinates $(z_{-1}, \hat{\sigma}_{-1}), (z_0,\hat{\sigma}_0), (z_{1},\hat{\sigma}_1)$. This is equivalent to a 3 points finite difference on a non uniform grid. We have then:
+Let $\sigma_0, \sigma_0', \sigma_0''$ be respectively the normal volatility, the slope and the curvature at the money expressed in log-moneyness $z$. We have:
+
+\begin{align}
+\begin{cases}
+\sigma_0 &= \alpha (f+b)^{\beta}\\
+\sigma_0' &= \frac{1}{2}\rho \nu (f+b) + \frac{1}{2} \beta \sigma_0\\
+\sigma_0'' &= \frac{(f+b)^2}{6\sigma_0}(2\nu^2 - 3\rho^2\nu^2)+\frac{1}{2} \rho \nu (f+b)+\frac{1}{6}(\beta^2+\beta)\sigma_0
+\end{cases}
+\end{align}
+This system can be exactly solved to give a first guess $\alpha_0, \rho_0,\nu_0$:
+\begin{align}
+  \begin{cases}
+\alpha_0 &=  \sigma_0 (f+b)^{-\beta}\\
+\nu_0^2 &= \frac{1}{(f+b)^2}\left[ 3\sigma_0\sigma_0''-\frac{1}{2}(\beta^2+\beta)\sigma_0^2-3\sigma_0(\sigma_0'-\frac{1}{2}\beta\sigma_0) +\frac{3}{2}\left(2\sigma_0'-\beta\sigma_0\right)^2\right] \\
+\rho_0 &= \frac{1}{\nu_0 (f+b)}\left(2\sigma_0'-\beta\sigma_0\right) 
+\end{cases} 
+\end{align}
+As for the lognormal volatility guess, we refine this first guess by solving exactly for the at-the-money volatility with the given $\rho_0$ and $\nu_0$. $\alpha_1$ is a root of the following third order polynomial:
+\begin{align}
+\frac{(\beta^2-2\beta) T}{24 (f+b)^{2-2\beta}}\alpha^3+ \frac{\rho\beta\nu T}{4(f+b)^{1-\beta}}\alpha^2 + \left(1+\frac{2-3\rho^2}{24}\nu^2 T\right)\alpha - \sigma_0 (f+b)^{-\beta} &= 0
+\end{align}
+Note that this polynomial is slightly different from the lognormal volatility polynomial. We take the $\alpha_1$ to be the smallest positive root.
+ 
+  
+%\subsubsection{Expansion of normal volatility at the money}
+%A normal volatility $\sigma_N$ can be converted almost exactly to a lognormal volatility $\sigma_B$ by first pricing an out of the money option with the Bachelier formula, and inverting the price to find the lognormal volatility with an accurate solver \citep{jackel2013let}. 
+%In our case, because the initial guess method depends mostly on volatilities closest to the money, we can also rely on another simple expansion based on the work of \citep{lorig2014implied}:
+%\begin{align}
+%\sigma_B &= v_0 - \frac{1}{2}v_0 z + \frac{1}{96}v_0(8z^2+T v_0^2 (4-T v_0^2)) \\
+%         &+ \frac{1}{192}T z v_0^3 (-12+5T v_0^2)
+%\end{align}
+%with $v_0 = \frac{\sigma_N}{f}$ and $z=\log(\frac{K}{f})$, where the last term is of order-3.
+
+\subsection{How to find the at-the-money volatility, slope and curvature?}
+The simplest is to fit a parabola to the three closest points around the forward with coordinates $(z_{-1}, \hat{\sigma}_{-1}), (z_0,\hat{\sigma}_0), (z_{1},\hat{\sigma}_1)$. This is equivalent to a 3 points finite difference on a non uniform grid. We have then:
 \begin{align}
 \sigma_0 &= z_0 z_1 w_{-1} \hat{\sigma}_{-1} + z_{-1} z_1 w_{0} \hat{\sigma}_{0} +  z_{-1} z_0w_{1} \hat{\sigma}_{1}\\
 \sigma_0' &= -(z_0 + z_1) w_{-1} \hat{\sigma}_{-1} - (z_{-1}+ z_1) w_{0} \hat{\sigma}_{0} -  (z_{-1}+ z_0)w_{1} \hat{\sigma}_{1}\\
@@ -191,20 +245,9 @@ When the input data is noisy, one could resort to a best fit parabola around the
 Another approach is to repeat the initial guess procedure with a parabola on different sets of three points further away from the forward and select the guess corresponding to the best overall fit.
 
 In our numerical tests we will select the guess that gives the minimum mean square error in volatilities between the two guesses stemming from the 3-points parabola and the 5-points parabola.
-
-\subsection{Normal volatility}
-When the input volatilities are normal (bpvol), we just convert them to equivalent lognormal volatilities and apply the same method as in the previous section to find the initial guess.
-
-
-A normal volatility $\sigma_N$ can be converted almost exactly to a lognormal volatility $\sigma_B$ by first pricing an out of the money option with the Bachelier formula, and inverting the price to find the lognormal volatility with an accurate solver \citep{jackel2013let}. 
-In our case, because the initial guess method depends mostly on volatilities closest to the money, we can also rely on another simple expansion based on the work of \citep{lorig2014implied}:
-\begin{align}
-\sigma_B &= v_0 - \frac{1}{2}v_0 z + \frac{1}{96}v_0(8z^2+T v_0^2 (4-T v_0^2)) \\
-         &+ \frac{1}{192}T z v_0^3 (-12+5T v_0^2)
-\end{align}
-with $v_0 = \frac{\sigma_N}{f}$ and $z=\log(\frac{K}{f})$, where the last term is of order-3.
 \section{Almost exact inversion of SABR smiles}
 We use the SABR parameters found by calibration on the S\&P500 options in December 2008 as starting point (Table \ref{tbl:smart_initialguess_sabr_input}). From those we regenerate a discrete set of implied volatilities for 12 strikes and 11 expiries using the lognormal SABR formula with $\beta = 1$. And finally we apply our initial guess procedure to each expiry.
+
 \begin{table}[h]
 \begin{center}
 \caption{\label{tbl:smart_initialguess_sabr_input}Reference SABR parameters}

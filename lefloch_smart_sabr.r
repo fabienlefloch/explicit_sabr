@@ -4,18 +4,41 @@ m$nu <- as.numeric(as.character(m$nu))
 m$rho <- as.numeric(as.character(m$rho))
 m$Error <- as.numeric(as.character(m$Error))
 ref <- m[m$Method=="Reference",]
-smart <- m[m$Method=="Smart",]
 m$alphae <- 0
-smart$alphae <- smart$alpha - ref$alpha
 m$rhoe <- 0
-smart$rhoe <- smart$rho - ref$rho
 m$nue <- 0
-smart$nue <- smart$nu - ref$nu
+smart1 <- m[m$Method=="Guess-1",]
+smart1$rhoe <- smart1$rho - ref$rho
+smart1$alphae <- smart1$alpha - ref$alpha
+smart1$nue <- smart1$nu - ref$nu
+
+smart0 = m[m$Method=="Guess-0",]
+smart0$rhoe <- smart0$rho - ref$rho
+smart0$alphae <- smart0$alpha - ref$alpha
+smart0$nue <- smart0$nu - ref$nu
+
+smart0a =m[m$Method=="Guess-0-alpha1",]
+smart0a$rhoe <- smart0a$rho - ref$rho
+smart0a$alphae <- smart0a$alpha - ref$alpha
+smart0a$nue <- smart0a$nu - ref$nu
+
+n <- rbind(smart0,smart1)
+qplot(Expiry, abs(alphae), data=n, geom="line", color=Method, ylab="alpha error")+scale_y_log10(breaks=c(1e-2, 1e-3, 1e-4, 1e-5, 1e-6))+theme(legend.position="bottom")
+ggsave(file="/home/fabien/mypapers/explicit_sabr/smart_initialguess_sabr_input_alpha.eps",width=4,height=4)
+qplot(Expiry, abs(rhoe), data=n, geom="line", color=Method, ylab="rho error")+scale_y_log10(breaks=c(1e-2, 1e-3, 1e-4, 1e-5, 1e-6))+theme(legend.position="bottom")
+ggsave(file="/home/fabien/mypapers/explicit_sabr/smart_initialguess_sabr_input_rho.eps",width=4,height=4)
+qplot(Expiry, abs(nue), data=n, geom="line", color=Method, ylab="nu error")+scale_y_log10(breaks=c(1e-2, 1e-3, 1e-4, 1e-5, 1e-6))+theme(legend.position="bottom")
+ggsave(file="/home/fabien/mypapers/explicit_sabr/smart_initialguess_sabr_input_nu.eps",width=4,height=4)
+n <- rbind(smart0, smart0a, smart1)
+qplot(Expiry, Error, data=n, geom="line", color=Method, ylab="root mean square error")+scale_y_log10(breaks=c(1e-2, 1e-3, 1e-4, 1e-5, 1e-6))+theme(legend.position="bottom")
+ggsave(file="/home/fabien/mypapers/explicit_sabr/smart_initialguess_sabr_input_error.eps",width=4,height=4)
 
 my.labs <- list("vol RMS", bquote(alpha),bquote(rho), bquote(nu))
 
 qplot(Expiry, abs(alphae), data=smart, geom="line", color="alpha", linetype="alpha", ylab="Error")+geom_line(aes(y=abs(rhoe), color="rho", linetype="rho"))+geom_line(aes(y=abs(nue), color="nu", linetype="nu"))+geom_line(aes(y=abs(Error),color="vol RMS", linetype="vol RMS"))+scale_y_log10(breaks=c(1e-2, 1e-3, 1e-4, 1e-5, 1e-6))+scale_colour_manual("parameter",values=c(4,2,3,1),breaks=c("vol RMS","alpha", "rho", "nu"), labels=my.labs)+scale_linetype_manual("parameter",values=c(4,2,3,1),breaks=c("vol RMS","alpha", "rho", "nu"), labels=my.labs)+theme(legend.position=c(0.85, 0.4))
 ggsave(file="/home/fabien/mypapers/explicit_sabr/smart_initialguess_sabr_input.eps",width=6,height=5)
+
+
 
 m<-read.table('/home/fabien/mypapers/explicit_sabr/sabr_smart_fit.txt', header=TRUE)
 m$alpha <- as.numeric(as.character(m$alpha))
@@ -32,6 +55,12 @@ m$bpvol <- as.numeric(as.character(m$bpvol))
 qplot(Strike, bpvol, data=m[m$Method != "Reference",], color=Method, geom="line")+geom_point(data=m[m$Method=="Reference",])+theme(legend.position="bottom")
 ggsave(file="/home/fabien/mypapers/explicit_sabr/explicit_fit_1m_beta05.eps",width=5,height=5)
 
+m<-read.table('/home/fabien/mypapers/explicit_sabr/explicit_fit_1m1y_beta05.txt', header=TRUE)
+m$Strike <- as.numeric(as.character(m$Strike))
+m$bpvol <- as.numeric(as.character(m$bpvol))
+qplot(Strike, bpvol, data=m[m$Method != "Reference",], color=Method, geom="line")+geom_point(data=m[m$Method=="Reference",])+theme(legend.position="bottom")
+ggsave(file="/home/fabien/mypapers/explicit_sabr/explicit_fit_1m1y_beta05.eps",width=5,height=5)
+
 m<-read.table('/home/fabien/mypapers/explicit_sabr/explicit_fit_2y_beta05.txt', header=TRUE)
 m$Strike <- as.numeric(as.character(m$Strike))
 m$bpvol <- as.numeric(as.character(m$bpvol))
@@ -47,3 +76,5 @@ m<-read.table('/home/fabien/mypapers/explicit_sabr/explicit_fit_sabr_0479_beta1.
 m$Strike <- as.numeric(as.character(m$Strike))
 m$Volatility <- as.numeric(as.character(m$Volatility))
 qplot(Strike, Volatility, data=m[m$Method != "Reference",], color=Method, geom="line")+geom_point(data=m[m$Method=="Reference",])+theme(legend.position="bottom")
+
+
