@@ -1,0 +1,38 @@
+ alpha: 4.21285715128146   beta: 1.0   rho: -0.6456075704268553   nu: 3.3830754750014074   b: 0.0   barrier: NaN } 0.224126282210431
+
+1900.0 0.2646202234330566 206.99358478484692
+[END]
+[LOG|DEBUG|19 May 2014 16:09:52,169|com.calypso.test.com.calypso.tk.analytics.sabr.arbfree.TestLawsonSwayneDensity|main|-]
+2014.0 0.2606631841215045 144.82136903060825
+[END]
+[LOG|DEBUG|19 May 2014 16:09:52,169|com.calypso.test.com.calypso.tk.analytics.sabr.arbfree.TestLawsonSwayneDensity|main|-]
+2100.0 0.2578234219077743 107.2899528296668
+
+last one
+alpha: 1.3476475408633821   beta: 1.0   rho: -0.475063818690989   nu: 1.3348833149849366   b: 0.0   barrier: NaN } 1.0258244646261819E-4
+
+equivalent to
+ double g = ;
+                    bpvol <- function(alpha,nu) alpha*(1+(-1/24*alpha*alpha+0.25*rho*nu*alpha+(2-3*rho*rho)/24*nu*nu)*T);
+
+beta = 0.5
+K = 1
+
+                    bpvol = alpha*(1+((beta*beta-2*beta)/24*alpha*alpha+0.25*rho*nu*alpha*beta+(2-3*rho*rho)/24*nu*nu)*term);
+
+
+solution=com.calypso.tk.analytics.sabr.arbfree.ShiftedSABRModelSpec {   alpha: 1.3476475408633821   beta: 1.0   rho: -0.475063818690989   nu: 1.3348833149849366   b: 0.0   barrier: NaN } 1.0258244646261819E-4
+[END]
+[LOG|DEBUG|19 May 2014 16:40:42,517|com.calypso.test.com.calypso.tk.analytics.impliedvolatilitysurface.TestSVJCalibration|main|-]
+error=2.9707831455100253E-4 -1.3507052271927167E-4 -2.2504296778919075E-4 -1.6561065247722162E-4 -6.279839338768634E-5 -1.4680873257622018E-5 2.4902442115948276E-5 5.3050815111033156E-5 6.801727284760917E-5 5.590192176427311E-5 -9.89906668263929E-6 -2.6390474988327584E-4 
+*** VS ***
+solution=com.calypso.tk.analytics.sabr.arbfree.ShiftedSABRModelSpec {   alpha: 0.26251080364113455   beta: 1.0   rho: -0.44660908237987085   nu: 0.30388697196627135   b: 0.0   barrier: NaN } 1.9865228339365394E-5
+[END]
+[LOG|DEBUG|19 May 2014 17:24:14,602|com.calypso.test.com.calypso.tk.analytics.impliedvolatilitysurface.TestSVJCalibration|main|-]
+error=6.2649403990922E-5 -2.8445785309028082E-5 -4.727171218782411E-5 -3.387204808186217E-5 -1.1816460124436379E-5 -1.995362214124441E-6 5.640201098167097E-6 1.0549083059530062E-5 1.2516120710182044E-5 8.03506059177117E-6 -5.211568902346864E-6 -4.079135605131179E-5 
+
+
+
+
+
+

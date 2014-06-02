@@ -1,0 +1,48 @@
+WELLS FIRST SLICE
+1
+alpha: 0.16866663934196016   beta: 1.0   rho: -0.1552348353356748   nu: 4.406127672296468   b: 0.0   barrier: NaN } 0.15334819415675083
+[END]
+
+0
+[LOG|DEBUG|31 May 2014 22:21:21,153|com.calypso.test.com.calypso.tk.analytics.impliedvolatilitysurface.TestSVJCalibration|main|-]
+solution=com.calypso.tk.analytics.sabr.arbfree.ShiftedSABRModelSpec {   alpha: 0.17376999999999998   beta: 1.0   rho: -0.15301958556359954   nu: 4.469914757366911   b: 0.0   barrier: NaN } 0.15913887173026195
+[END]
+[LOG|DEBUG|31 May 2014 22:21:21,167|com.calypso.test.com.calypso.tk.analytics.impliedvolatilitysurface.TestSVJCalibration|main|-]
+solution=com.calypso.tk.analytics.sabr.arbfree.ShiftedSABRModelSpec {   alpha: 0.281692435090393   beta: 1.0   rho: -0.1532995296742704   nu: 0.8690756657321813   b: 0.0   barrier: NaN } 0.05921970743090322
+
+
+SECOND SLICE
+1
+x0=0.0 guess=com.calypso.tk.analytics.sabr.arbfree.ShiftedSABRModelSpec {   alpha: 0.22102837839946568   beta: 1.0   rho: -0.2953233435660477   nu: 2.9528298568276594   b: 0.0   barrier: NaN } 0.06312045699035018
+
+0
+solution=com.calypso.tk.analytics.sabr.arbfree.ShiftedSABRModelSpec {   alpha: 0.23260000000000003   beta: 1.0   rho: -0.28882503256653785   nu: 3.019265949876082   b: 0.0   barrier: NaN } 0.07473288917988198
+[END]
+[LOG|DEBUG|31 May 2014 22:21:21,171|com.calypso.test.com.calypso.tk.analytics.impliedvolatilitysurface.TestSVJCalibration|main|-]
+solution=com.calypso.tk.analytics.sabr.arbfree.ShiftedSABRModelSpec {   alpha: 0.25398051907222347   beta: 1.0   rho: -0.3631805955097911   nu: 1.798989563721595   b: 0.0   barrier: NaN } 0.018077320789390727
+
+
+
+SP500 SPLINE 3RD SLICE
+0/1 spline
+x0=0.0 guess=com.calypso.tk.analytics.sabr.arbfree.ShiftedSABRModelSpec {   alpha: 0.15979   beta: 1.0   rho: -1.0   nu: 1.0E-4   b: 0.0   barrier: NaN } 0.09164222488296218
+solution=com.calypso.tk.analytics.sabr.arbfree.ShiftedSABRModelSpec {   alpha: 0.20997207679391447   beta: 1.0   rho: -0.9999999998560788   nu: 0.4379205721016721   b: 0.0   barrier: NaN } 0.05240768174042631
+
+1 para5
+x0=0.0 guess=com.calypso.tk.analytics.sabr.arbfree.ShiftedSABRModelSpec {   alpha: 0.15777977546453628   beta: 1.0   rho: -0.5850905772478416   nu: 1.6947947773961554   b: 0.0   barrier: NaN } 0.017520183333535416
+
+0 para5
+solution=com.calypso.tk.analytics.sabr.arbfree.ShiftedSABRModelSpec {   alpha: 0.15979   beta: 1.0   rho: -0.5832856524917449   nu: 1.7000391667226509   b: 0.0   barrier: NaN } 0.0188306772914897
+[END]
+[LOG|DEBUG|31 May 2014 22:40:43,825|com.calypso.test.com.calypso.tk.analytics.impliedvolatilitysurface.TestSVJCalibration|main|-]
+solution=com.calypso.tk.analytics.sabr.arbfree.ShiftedSABRModelSpec {   alpha: 0.16223875367416085   beta: 1.0   rho: -0.6020084250319798   nu: 1.4331298541007644   b: 0.0   barrier: NaN } 0.00956167015430974
+[END]
+
+1 para3
+x0=0.0 guess=com.calypso.tk.analytics.sabr.arbfree.ShiftedSABRModelSpec {   alpha: 0.15886746892468856   beta: 1.0   rho: -0.6745037075001312   nu: 1.769269300624433   b: 0.0   barrier: NaN } 0.0225588758494651
+[END]
+
+0 para3
+ alpha: 0.15979   beta: 1.0   rho: -0.6738826443569412   nu: 1.7708998930757998   b: 0.0   barrier: NaN } 0.023042761636486393
+[END]
+

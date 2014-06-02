@@ -1,0 +1,120 @@
+#beta=1
+xsi(beta) := nu/alpha*(f^(1-beta)-K^(1-beta))/(1-beta);
+x(beta) := log((sqrt(1-2*rho*xsi(beta)+xsi(beta)^2)-rho+xsi(beta))/(1-rho));
+taylor(xsi(beta),beta,1,0);
+g(beta) := (1-beta)^2/(f^(1-beta)-K^(1-beta))^2*log((f*K)^(beta/2)*(f^(1-beta)-K^(1-beta))/((1-beta)*(f-K)));
+taylor(g(beta),beta,1,0);
+
+#f=K
+xsi(f) := nu/alpha*(f^(1-beta)-K^(1-beta))/(1-beta);
+x(f) :=  log((sqrt(1-2*rho*xsi(f)+xsi(f)^2)-rho+xsi(f))/(1-rho));
+g(f) := (1-beta)^2/(f^(1-beta)-K^(1-beta))^2*log((f*K)^(beta/2)*(f^(1-beta)-K^(1-beta))/((1-beta)*(f-K)));
+
+taylor(1/x(f),f,K,0);
+taylor(g(f),f,K,0);
+taylor((f^beta-K^beta)/(f-K),f,K,0);
+
+g(f) := log((log(f)-log(K))*sqrt(f*K)/(f-K))/(log(f)-log(K))^2;
+taylor(g(f),f,K,0);
+
+#rho=1
+xsi(beta) := nu/alpha*(f^(1-beta)-K^(1-beta))/(1-beta);
+x(rho) := log((sqrt(1-2*rho*xsi(beta)+xsi(beta)^2)-rho+xsi(beta))/(1-rho));
+taylor(1/x(rho),rho,1,0);
+
+# expansion in K around K = F normal
+xsi(K) := nu/alpha*(f^(1-beta)-K^(1-beta))/(1-beta);
+x(K) :=  log((sqrt(1-2*rho*xsi(K)+xsi(K)^2)-rho+xsi(K))/(1-rho));
+v(K) := (f-K)/x(K)*nu*(1+((beta^2-2*beta)/24*(f*K)^(beta-1)*alpha^2+rho*nu*alpha*beta/4*(f*K)^((beta-1)/2)+(2-3*rho^2)/24*nu^2)*T);
+taylor(v(K),K,f,2);
+
+z=f-K = f*(1-K/f)
+K^beta = (f-z)^beta
+xsi(z) := nu/alpha*(f^(1-beta)-(f-z)^(1-beta))/(1-beta);
+x(z) :=  log((sqrt(1-2*rho*xsi(z)+xsi(z)^2)-rho+xsi(z))/(1-rho));
+v(z) := z/x(z)*nu*(1+((beta^2-2*beta)/24*(f*(f-z))^(beta-1)*alpha^2+rho*nu*alpha*beta/4*(f*(f-z))^((beta-1)/2)+(2-3*rho^2)/24*nu^2)*T);
+taylor(v(z),z,0,2);
+
+=> v0 = alpha*f^beta
+
+v1(alpha) := (((3*f^3*nu^3*rho^3+(3*f^beta*alpha*beta*f^2−6*abs(f)^beta*abs(f)*alpha*beta*f)*nu^2*rho^2+
+(−2*f^3*nu^3+((−(abs(f)^beta)^2*alpha^2*beta^2+2*(abs(f)^beta)^2*alpha^2*beta)*f−12*abs(f)^beta*abs(f)*f^beta*alpha^2*beta^2+6*abs(f)^beta*abs(f)*f^beta*alpha^2*beta)*nu)*rho−2*f^beta*alpha*beta*f^2*nu^2−3*(abs(f)^beta)^2*f^beta*alpha^3*beta^3+8*(abs(f)^beta)^2*f^beta*alpha^3*beta^2−4*(abs(f)^beta)^2*f^beta*alpha^3*beta)*T−24*f^3*nu*rho−24*f^beta*alpha*beta*f^2)*z)/(48*f^3);
+taylor(v1(alpha),alpha,0,2);
+
+=> v1 = -1/2*rho*nu - 1/2*beta*alpha * f^{beta-1}
+
+v2(alpha):=(((9*f^4*nu^4*rho^4−18*abs(f)^beta*abs(f)*alpha*beta*f^2*nu^3*rho^3+
+(−12*f^4*nu^4+(((−3*(f^beta)^2−3*(abs(f)^beta)^2)*alpha^2*beta^2+(6*(f^beta)^2+6*(abs(f)^beta)^2)*alpha^2*beta)*f^2+(18*abs(f)^beta*abs(f)*f^beta*alpha^2*beta^2−18*abs(f)^beta*abs(f)*f^beta*alpha^2*beta)*f)*nu^2)*rho^2+(12*abs(f)^beta*abs(f)*alpha*beta*f^2*nu^3+((6*(abs(f)^beta)^2*f^beta*alpha^3*beta^3−18*(abs(f)^beta)^2*f^beta*alpha^3*beta^2+12*(abs(f)^beta)^2*f^beta*alpha^3*beta)*f+33*abs(f)^beta*abs(f)*(f^beta)^2*alpha^3*beta^3−66*abs(f)^beta*abs(f)*(f^beta)^2*alpha^3*beta^2+27*abs(f)^beta*abs(f)*(f^beta)^2*alpha^3*beta)*nu)*rho+4*f^4*nu^4+((2*(f^beta)^2+2*(abs(f)^beta)^2)*alpha^2*beta^2+(−4*(f^beta)^2−4*(abs(f)^beta)^2)*alpha^2*beta)*f^2*nu^2+13*(abs(f)^beta)^2*(f^beta)^2*alpha^4*beta^4−52*(abs(f)^beta)^2*(f^beta)^2*alpha^4*beta^3+64*(abs(f)^beta)^2*(f^beta)^2*alpha^4*beta^2−24*(abs(f)^beta)^2*(f^beta)^2*alpha^4*beta)*T−72*f^4*nu^2*rho^2+48*f^4*nu^2+(24*(f^beta)^2*alpha^2*beta^2−48*(f^beta)^2*alpha^2*beta)*f^2)*z^2)/(288*f^beta*alpha*f^4);
+taylor(v2(alpha),alpha,0,2);
+
+=> v2 = (-1/4*nu^2*rho^2+1/6*nu^2)/(alpha*f^beta) - alpha/12*((-beta^2+2*beta)*f^{beta-2}
+# normal exp
+xsi(z) := nu/alpha*f^(1-beta)*(1-exp((1-beta)*z))/(1-beta);
+x(z) :=  log((sqrt(1-2*rho*xsi(z)+xsi(z)^2)-rho+xsi(z))/(1-rho));
+v(z) := f*(1-exp(z))/x(z)*nu*(1+((beta^2-2*beta)/24*f^(2*beta-2)*exp(z*(beta-1))*alpha^2+rho*nu*alpha*beta/4*f^(beta-1)*exp(z*(beta-1)/2)+(2-3*rho^2)/24*nu^2)*T);
+taylor(v(z),z,0,2);
+  
+v0(alpha) := -((3*alpha*f^2*f^beta*nu^2*rho^2−6*alpha^2*beta*f*(f^beta)^2*nu*rho−2*alpha*f^2*f^beta*nu^2+(−alpha^3*beta^2+2*alpha^3*beta)*(f^beta)^3)*T−24*alpha*f^2*f^beta)/(24*f^2);
+taylor(v0(alpha),alpha,0,2)+
+
+==> v0 = alpha f^beta
+
+v1(alpha):= -(((3*f^3*nu^3*rho^3−3*alpha*beta*f^2*f^beta*nu^2*rho^2+(−2*f^3*nu^3+(−13*alpha^2*beta^2+8*alpha^2*beta)*f*(f^beta)^2*nu)*rho−2*alpha*beta*f^2*f^beta*nu^2+(−3*alpha^3*beta^3+8*alpha^3*beta^2−4*alpha^3*beta)*(f^beta)^3)*T−24*f^3*nu*rho−24*alpha*beta*f^2*f^beta)*z)/(48*f^2);
+taylor(v1(alpha),alpha,0,2);
+
+==> v1 = 1/2*rho*nu*f+1/2*beta*alpha*f^beta
+
+v2(alpha) := (((9*f^4*nu^4*rho^4+
+(−18*alpha*beta−9*alpha)*f^3*f^beta*nu^3*rho^3+(−12*f^4*nu^4+(12*alpha^2*beta^2+3*alpha^2*beta)*f^2*(f^beta)^2*nu^2)*rho^2+((12*alpha*beta+6*alpha)*f^3*f^beta*nu^3+(39*alpha^3*beta^3−45*alpha^3*beta^2+15*alpha^3*beta)*f*(f^beta)^3*nu)*rho+4*f^4*nu^4+
+(4*alpha^2*beta^2−2*alpha^2*beta)*f^2*(f^beta)^2*nu^2+(13*alpha^4*beta^4−43*alpha^4*beta^3+40*alpha^4*beta^2−12*alpha^4*beta)*(f^beta)^4)*T−72*f^4*nu^2*rho^2+72*alpha*f^3*f^beta*nu*rho+48*f^4*nu^2+(24*alpha^2*beta^2+24*alpha^2*beta)*f^2*(f^beta)^2)*z^2)/(
+288*alpha*f^2*f^beta);
+taylor(v2(alpha),alpha,0,2);
+
+==> v2= f^2/(alpha*f^beta)*(1/6*nu^2-1/4*nu^2*rho^2)+1/4*f*nu*rho+1/12*(beta^2+beta)f^beta*alpha
+
+f0 = alpha f^beta
+f1 = 1/2*rho*nu*f+1/2*beta*alpha*f^beta
+f2= f^2/(alpha*f^beta)*(1/3*nu^2-1/2*nu^2*rho^2)+1/2*f*nu*rho+1/6*(beta^2+beta)f^beta*alpha
+
+alpha = sigma/f^beta;
+rho*nu = (2*sigma'-beta*sigma)/f
+nu^2*(1/3*f^2/sigma)-1/2*(2*sigma'-beta*sigma)^2*f^2/sigma+1/2*f*(2*sigma'-beta*sigma)
+
+# lognoraml
+xsi(K) := nu/alpha*(f^(1-beta)-K^(1-beta))/(1-beta);
+x(K) :=  log((sqrt(1-2*rho*xsi(K)+xsi(K)^2)-rho+xsi(K))/(1-rho));
+v(K) := 1/x(K)*nu*log(f/K)*(1+(((beta-1)^2)/24*(f*K)^(beta-1)*alpha^2+rho*nu*alpha*beta/4*(f*K)^((beta-1)/2)+(2-3*rho^2)/24*nu^2)*T);
+taylor(v(K),K,f,2);
+
+
+#lognormal exp
+f^(1-beta) = exp((1-beta)log(f))
+log(K/f)=z
+xsi(z) := nu/alpha*f^(1-beta)*(1-exp((1-beta)*z))/(1-beta);
+x(z) :=  log((sqrt(1-2*rho*xsi(z)+xsi(z)^2)-rho+xsi(z))/(1-rho));
+v(z) := -1/x(z)*nu*z*(1+(((beta-1)^2)/24*f^(2*beta-2)*exp(z*(beta-1))*alpha^2+rho*nu*alpha*beta/4*f^(beta-1)*exp(z*(beta-1)/2)+(2-3*rho^2)/24*nu^2)*T);
+taylor(v(z),z,0,2);
+
+=>> ignore terms in alpha*nu^2*rho^2T, alpha^2*nu*rhoT, alpha*nu^2T, alpha^3T
+alpha*f^(beta-1)
+-(1/2*alpha*f^(beta-1)*(1-beta)-1/2*nu*rho)
+-1/(4*v0)*nu^2*rho^2+1/(6*v0)*nu^2+1/72*v0*(beta-1)^2*T
+
+v1(alpha):=-(((3*f^3*
+nu^3*rho^3+(−3*alpha*beta−3*alpha)*f^2*f^beta*nu^2*rho^2+(−2*f^3*nu^3+(−13*alpha^2*beta^2+14*alpha^2*beta−alpha^2)*f*(f^beta)^2*nu)*rho+(−2*alpha*beta+2*alpha)*f^2*f^beta*nu^2
++(−3*alpha^3*beta^3+9*alpha^3*beta^2−9*alpha^3*beta+3*alpha^3)*(f^beta)^3)*T−24*f^3*nu*rho+(−24*alpha*beta+24*alpha)*f^2*f^beta)*z)/(48*f^3)
+
+taylor(v1(alpha),alpha,0,2);
+==> collect terms in alpha and alpha^2
+
+v2(alpha):=(((9*f^4*nu^4*
+rho^4−18*alpha*beta*f^3*f^beta*nu^3*rho^3+(−12*f^4*nu^4+(12*alpha^2*beta^2−6*alpha^2*beta−6*alpha^2)*f^2*(f^beta)^2*nu^2)*rho^2+
+(12*alpha*beta*f^3*f^beta*nu^3+(39*alpha^3*beta^3−84*alpha^3*beta^2+51*alpha^3*beta−6*alpha^3)*f*(f^beta)^3*nu)*rho+4*f^4*nu^4+(4*alpha^2*beta^2−8*alpha^2*beta+4*alpha^2)*f^2*
+(f^beta)^2*nu^2+(13*alpha^4*beta^4−52*alpha^4*beta^3+78*alpha^4*beta^2−52*alpha^4*beta+13*alpha^4)*(f^beta)^4)*T−72*f^4*nu^2*rho^2+48*f^4*nu^2+
+(24*alpha^2*beta^2−48*alpha^2*beta+24*alpha^2)*f^2*(f^beta)^2)*z^2)/(288*alpha*f^3*f^beta);
+
+taylor(v2(alpha),alpha,0,2);
+
+==> (-1/4*nu^2*rho^2+1/12*nu^2) / v0 + v0/12*(beta-1)^2
+
+

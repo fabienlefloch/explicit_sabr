@@ -1,0 +1,22 @@
+v0 = alpha*F^(beta-1)
+0.5*x*(beta-1)*v0 
++ 1/4*nu*(2*x*rho+t*v0*(nu-rho*v0))
++ 1/96*(beta-1)^2*v0*(8*x^2+t*v0^2(4))
+- 1/48*t*(beta-1)*nu*v0*(6*x*nu-2*(6-5*x)*rho*v0)
++ 1/96*t*nu^2*v0*(32-12*rho^2)
+- 1/24*t*nu^2*rho*(nu-3*rho*v0)*x+nu^2*(2-3*rho^2)/(12*v0)*x^2
+
+A+B*x+C*t+D*x^2+E*xt
+A(t)+B(t)*x+C(t)*x^2
+
+A=v0+0.25*t*v0*(-nu+rho*v0)
+
+Calibration: DE+LM, Smart expansion? +LM.
+use Li on basic LN approx? 1.5x Faster than Jaeckel in practice. 8-9s vs 13s. What about Halley's method?
+
+case beta=1
+ATM:
+bpvol=alpha*(F+b)*(1+(g*alpha^2+0.25*rho*nu*alpha++(2-3*rho^2)/24*nu^2)*term);
+
+x=f-K
+bpvol(K)=
