@@ -14,11 +14,11 @@
 \publisher{Unpublished}
 \jname{}
 
-\markboth{Fabien {Le Floc'h}}{Draft}
+\markboth{Fabien {Le Floc'h} and Gary Kennedy}{Draft}
 
 \title{Explicit SABR Calibration through Simple Expansions}
-\author{Fabien {Le Floc'h}$^\star$\thanks{{\em{Correspondence Address}}: Calypso Technology, 106 rue de La Bo\'{e}tie, 75008 Paris. Email: \texttt{fabien\_lefloch@calypso.com}}
-\affil{$^\star$Calypso Technology, 106 rue de La Bo\'{e}tie, 75008 Paris}}
+\author{Fabien {Le Floc'h}$^\star$\thanks{{\em{Correspondence Address}}: Calypso Technology, 106 rue de La Bo\'{e}tie, 75008 Paris. Email: \texttt{fabien\_lefloch@calypso.com} \vspace{6pt}} and Gary Kennedy$^\dag$}
+\affil{$^\star$Calypso Technology, 106 rue de La Bo\'{e}tie, 75008 Paris\\$^\dag$Clarus Financial Technology, London}
 %
 \date{\today}
 \received{v1.0 released June 2014}
@@ -246,85 +246,169 @@ Another approach is to repeat the initial guess procedure with a parabola on dif
 
 In our numerical tests we will select the guess that gives the minimum mean square error in volatilities between the two guesses stemming from the 3-points parabola and the 5-points parabola.
 \section{Almost exact inversion of SABR smiles}
-We use the SABR parameters found by calibration on the S\&P500 options in December 2008 as starting point (Table \ref{tbl:smart_initialguess_sabr_input}). From those we regenerate a discrete set of implied volatilities for 12 strikes and 11 expiries using the lognormal SABR formula with $\beta = 1$. And finally we apply our initial guess procedure to each expiry.
+We use the SABR parameters found by calibration of the lognormal SABR model on the S\&P500 options in December 2008 as starting point (Table \ref{tbl:smart_initialguess_sabr_input}). From those we regenerate a discrete set of implied volatilities for 12 strikes and 11 expiries using the lognormal SABR formula with $\beta = 1$. And finally we apply the explicit initial guess procedure to each expiry.
+
+%add guess alpha1 parameters in following table
+%      REFERENCE     EXPLICIT GUESS
+% exp  a  r  n       a    r   n
 
 \begin{table}[h]
 \begin{center}
-\caption{\label{tbl:smart_initialguess_sabr_input}Reference SABR parameters}
-\begin{tabular}{|c|c|c|c|}
+\caption{\label{tbl:smart_initialguess_sabr_input}Reference SABR parameters and explicit guess}
+\begin{tabular}{c|c c c|c c c c}
 \hline
-Expiry & $\alpha$ & $\rho$ & $\nu$ \\ 
+Expiry & \multicolumn{3}{|c|}{Reference parameters} & \multicolumn{4}{|c}{Explicit guess}\\
+years & $\alpha$ & $\rho$ & $\nu$ & $\alpha$ & $\rho$ & $\nu$ & vol RMSE \\ 
 \hline
-0.058&	0.271&	-0.345&	1.010 \\
-0.153&	0.256&	-0.321&	0.933\\
-0.230&	0.256&	-0.346&	0.820\\
-0.479&	0.255&	-0.370&	0.629\\
-0.729&	0.257&	-0.403&	0.528\\
-1.227&	0.260&	-0.429&	0.448\\
-1.726&	0.261&	-0.440&	0.392\\
-2.244&	0.262&	-0.445&	0.355\\
-2.742&	0.262&	-0.445&	0.329\\
-3.241&	0.262&	-0.447&	0.310\\
-4.239&	0.263&	-0.452&	0.284\\
+0.058&	0.271&	-0.345&	1.010 & 0.271 & -0.343 & 1.008 & 2.64e-04 \\
+0.153&	0.256&	-0.321&	0.933 & 0.256 & -0.319 & 0.934 & 1.36e-04\\
+0.230&	0.256&	-0.346&	0.820 & 0.256 & -0.344 & 0.822 & 1.13e-04\\
+0.479&	0.255&	-0.370&	0.629 & 0.255 & -0.369 & 0.631 & 8.25e-05\\
+0.729&	0.257&	-0.403&	0.528 & 0.257 & -0.402 & 0.528 & 2.30e-05\\
+1.227&	0.260&	-0.429&	0.448 & 0.260 & -0.429 & 0.447 & 6.15e-05\\
+1.726&	0.261&	-0.440&	0.392 & 0.261 & -0.440 & 0.390 & 1.17e-04\\
+2.244&	0.262&	-0.445&	0.355 & 0.262 & -0.445 & 0.352 & 1.59e-04\\
+2.742&	0.262&	-0.445&	0.329 & 0.262 & -0.445 & 0.326 & 1.85e-04\\
+3.241&	0.262&	-0.447&	0.310 & 0.262 & -0.447 & 0.306 & 2.13e-04\\
+4.239&	0.263&	-0.452&	0.284 & 0.263 & -0.452 & 0.279 & 2.67e-04\\
 \hline
 \end{tabular}
 \end{center}
 \end{table}
 
-The root mean square error in implied volatilities of the fit is always lower than $3\cdot 10^{-4}$. $\rho, \nu$ are recovered with an accuracy higher than $5\cdot 10^{-3}$ and $\alpha$ is recovered with and accuracy higher than $10^{-4}$, independently of the expiry (see Figure \ref{fig:smart_initialguess_sabr_input}). 
+The root mean square error in implied volatilities of the fit is always lower than $3\cdot 10^{-4}$. $\rho, \nu$ are recovered with an accuracy higher than $5\cdot 10^{-3}$ and $\alpha$ is recovered with and accuracy higher than $10^{-4}$, independently of the expiry (see Table \ref{tbl:smart_initialguess_sabr_input}). The refinement $\alpha_1$ allows to gain one order of magnitude in accuracy over $\alpha_0$, we display the various stages of the initial guess procedure on the slice of expiry 0.479 on Figure \ref{fig:smart_initialguess_sabr_input}.
 \begin{figure}[htbp]
-  \caption{\label{fig:smart_initialguess_sabr_input}Error between the initial guess and the original SABR parameters}
+  \caption{\label{fig:smart_initialguess_sabr_input}The various stages of the initial guess method for the slice of expiry 0.479 year}
 \begin{center}
- \includegraphics[width=10cm]{smart_initialguess_sabr_input.eps}
+ \includegraphics[width=16cm]{explicit_fit_sabr_0479_beta1.eps}
 \end{center}
 \end{figure}
 
 \section{Real world smiles}
 \subsection{Calibration on the analytic formula}
 \subsubsection{Equity option smiles}
-To calibrate SABR to equity implied volatility surfaces, we minimize the root mean square error in implied volatilities with the Levenberg-Marquardt method \citep{}, using as initial guess, either our explicit method, or alternatively a guess found by running the differential evolution algorithm \citep{} with a population size 20 on 1000 generations. The resulting mean square error is displayed in Figure \ref{fig:explicit_de_equity_error}.
+To calibrate SABR to equity implied volatility surfaces from December 2012, we minimize the weighted root mean square error in implied volatilities with the Levenberg-Marquardt method \citep{levenberg1944method,marquardt1963algorithm}, placing more weight to volatilities around ATM +/- 20\%. We compare the results obtained using either our explicit method as initial guess, or alternatively a guess found by running the differential evolution algorithm \citep{storn1997differential} with a population size 20 on 1000 generations. The resulting mean square error is displayed in Figure \ref{fig:explicit_de_equity_error}.
 
-\begin{figure}[htbp]
-  \caption{\label{fig:explicit_de_equity_error}Root mean square error of calibration on various equity surfaces}
+\begin{figure}[!h]
+  \caption{\label{fig:explicit_de_equity_error}Root mean square error of calibration per expiry on various equity surfaces}
 \begin{center}
- \includegraphics[width=12cm]{explicit_de_equity_error.eps}
+ \includegraphics[width=16cm]{explicit_de_equity_error.eps}
 \end{center}
 \end{figure}
 
-The explicit guess leads a mean square error in implied volatilities nearly indistinguishable from the differential evolution guess. It is interesting however to look at the calibrated parameters values: the calibrated $\alpha$ shows some strong variations with the guess found by differential evolution, while it is relatively smooth with our explicit initial guess (Figure  \ref{fig:explicit_de_equity_alpha}). $\rho$ and $\nu$ behave similarly. We will take a closer look at why this happens in the next section.
-\begin{figure}[htbp]
+The minimization on the explicit guess leads a mean square error in implied volatilities nearly indistinguishable from a minimization on the differential evolution guess. It is interesting however to look at the calibrated parameters values: the calibrated $\alpha$ shows some strong variations with the guess found by differential evolution, while it is relatively smooth with our explicit initial guess (Figure  \ref{fig:explicit_de_equity_alpha}). $\rho$ and $\nu$ behave similarly. We will take a closer look at why this happens in the next section.
+\begin{figure}[!h]
   \caption{\label{fig:explicit_de_equity_alpha}Calibrated $\alpha$ on various equity surfaces}
 \begin{center}
- \includegraphics[width=12cm]{explicit_de_equity_alpha.eps}
+ \includegraphics[width=16cm]{explicit_de_equity_alpha.eps}
 \end{center}
 \end{figure}
 
 
 \subsubsection{Two SABRs for the same smile}
-%the problem with differential evolution
+Figure \ref{fig:two_sabr_1_smile} illustrates how two different sets of SABR parameters can lead to an equally good fit. We just picked the S\&P 500 options expiring in 4 years used in the previous section. The root mean square error is  0.00219269910750194 for the SABR parameters with lower $\alpha$ while the one for the higher $\alpha$ is 0.002192699107502103, that is the lower $\alpha$ fits better by only $10^{-16}$.
 
-The fact that two different SABR parameters sets can lead to smiles with nearly the same error measure is the root of issues with differential evolution: it is not obvious which set of parameter is the right one without some additional constraint on the variation of the parameters. This can be resolved by some penalty term, but it is difficult in practice to find the correct penalty term that works for a variety of situations. A better approach is to look beyond the best candidate, and consider as alternative initial guesses the other candidates in the latest generation with very similar error measure and different (lower) $\alpha$.
+\begin{figure}[htbp]
+  \caption{\label{fig:two_sabr_1_smile}Smiles corresponding to $\alpha= 0.237, \rho= -0.735, \nu= 0.398$ and $\alpha= 0.850, \rho= -0.742, \nu= 1.335$ with $\beta=1, f=1426.19, T=4$}
+\begin{center}
+ \includegraphics[width=14cm]{two_sabr_1_smile.eps}
+\end{center}
+\end{figure}
+The fact that two different SABR parameters sets can lead to smiles with nearly the same error measure is the root of issues with differential evolution: it is not obvious which set of parameter is the right one without some additional constraint on the variation of the parameters. This can be resolved by some penalty term, but it is difficult in practice to find the correct penalty term that works for a variety of situations. A better approach would be look beyond the best candidate, and consider as alternative initial guesses the other candidates in the latest generation with very similar error measure and different (lower) $\alpha$. In contrast, the explicit guess leads directly to the correct smile.
 
 \subsubsection{Swaption smiles}
-We apply the same calibration methodology as for the equity smiles cases, but relying on the normal formula with $\beta=\frac{1}{2}$ instead. The calibrated parameters are indistinguishable for between the calibration on the explicit initial guess and the calibration on the guess found by differential evolution (see Table XXX). Furthermore, the initial guess is very close to the calibration result. 
+We apply the same calibration methodology as for the equity smiles cases, but relying on the normal formula with $\beta=0.5$ instead. The calibrated parameters are indistinguishable between the calibration on the explicit initial guess and the calibration on the guess found by differential evolution (see Table \ref{tbl:normal_sabr_fit}). Furthermore, the initial guess is very close to the calibration result. 
 
-Figures \ref{fig:explicit_fit_1m_beta05} and \ref{fig:explicit_fit_2y_beta05} show how close are the smile produced by the initial guess and the smile resulting from the Levenberg-Marquardt minimization.
-
-\begin{figure}[htbp]
+\begin{table}[h]
+\begin{center}
+\caption{\label{tbl:normal_sabr_fit}calibrated SABR parameters with $\beta=0.5$. LM denotes Levenberg-Marquardt minimization.}
+\begin{tabular}{c c c c c c}
+\hline
+Method & $\alpha$ & $\rho$ &$\nu$ & normal vol RMSE & time(ms) \\
+\hline
+\multicolumn{6}{c}{1m5y swaption on May 28 2014}\\
+\hline
+Explicit & 0.052 & 0.458 & 0.751 & 2.95e-04 & 0.01 \\
+Explicit + LM  & 0.052 & 0.368 & 0.768 & 2.39e-04 & 0.11\\
+Differential Evolution + LM  & 0.052 & 0.368 & 0.768 & 2.39e-04 & 5.17 \\
+\hline
+\multicolumn{6}{c}{2y5y swaption on May 28 2014}\\
+\hline
+Explicit & 0.052 & 0.060 & 0.322 & 1.43e-05 & 0.01 \\
+Explicit + LM & 0.052 & 0.058 & 0.313 & 7.59e-06 & 0.10\\
+Differential Evolution + LM & 0.052 & 0.058 & 0.313 & 7.59e-06 & 1.95\\
+\hline
+\multicolumn{6}{c}{10y10y swaption on May 28 2014}\\
+\hline
+Explicit & 0.037 & -0.141 & 0.319 & 2.26e-05 & 0.01 \\
+Explicit + LM  & 0.037 & -0.153 & 0.305 & 4.68e-06 & 0.12\\
+Differential Evolution + LM  & 0.037 & -0.153 & 0.305 & 4.68e-06 & 3.67\\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+Figures \ref{fig:explicit_fit_1m_beta05}, \ref{fig:explicit_fit_2y_beta05} and \ref{fig:explicit_fit_10y_beta05} show how close are the smile produced by the initial guess and the smile resulting from the Levenberg-Marquardt minimization for short expiries as well as for long ones.
+\begin{figure}[h!]
   \caption{\label{fig:explicit_fit_1m_beta05}Initial guess and calibrated smile for a May 2014 1m5y Swaption }
 \begin{center}
- \includegraphics[width=8cm]{explicit_fit_1m_beta05.eps}
+ \includegraphics[width=12cm]{explicit_fit_1m_beta05.eps}
 \end{center}
 \end{figure}
-\begin{figure}[htbp]
-  \caption{\label{fig:explicit_fit_2y_beta05}Initial guess and calibrated smile for a May 2014 2y5y Swaption}
-\begin{center}
- \includegraphics[width=8cm]{explicit_fit_2y_beta05.eps}
-\end{center}
+
+\begin{figure}[htb]
+  \begin{center}  
+      \subfigure[\label{fig:explicit_fit_2y_beta05}2y5y Swaption]{
+\includegraphics[width=7cm]{explicit_fit_2y_beta05.eps}}
+    \subfigure[\label{fig:explicit_fit_10y_beta05}10y10y Swaption]{
+  \includegraphics[width=7cm]{explicit_fit_10_beta05.eps} }
+  \end{center}
+     \caption{Initial guess and calibrated smile}
 \end{figure}
+
+
 \subsection{Calibration on the arbitrage free PDE}
+We calibrate the same swaptions as in the previous section but using the arbitrage free SABR model from \citep{hagan2013arbitrage}. In the calibration procedure there is the need to transform the swaption price resulting from integrating the probability density to a normal volatility, in order to compute the error in terms of normal volatilities. This can be achieved with near machine accuracy using the algorithm from \citep{lefloch2014bpvol}. The transformation to normal volatitilies must be reasonably accurate for extremely low option prices, as even if the options reference prices are not so low, the prices resulting from the best fit procedure can be extremely low.
+
+Short and medium expiries calibrated SABR parameters are very close to the one of the previous section (Table \ref{tbl:arbfree_sabr_fit}).
+\begin{table}[h]
+\begin{center}
+\caption{\label{tbl:arbfree_sabr_fit}calibrated SABR parameters with $\beta=0.5$ for the arbitrage free SABR model. LM denotes Levenberg-Marquardt minimization.}
+\begin{tabular}{c c c c c c}
+\hline
+Method & $\alpha$ & $\rho$ &$\nu$ & normal vol RMSE & time(s) \\
+\hline
+\multicolumn{6}{c}{1m5y swaption on May 28 2014}\\
+\hline
+Explicit & 0.052 & 0.458 & 0.751 & 2.87e-04 & 0.005 \\
+Explicit+LM & 0.052 & 0.374 & 0.765 & 2.40e-04 & 0.071\\
+\hline
+\multicolumn{6}{c}{2y5y swaption on May 28 2014}\\
+\hline
+Explicit & 0.052 & 0.055 & 0.328 & 1.40e-05 & 0.005\\
+Explicit+LM & 0.052 & 0.058 & 0.323 & 6.61e-06 & 0.081\\
+\hline
+\multicolumn{6}{c}{10y10y swaption on May 28 2014}\\
+\hline
+Explicit & 0.037 & -0.145 & 0.322 & 7.36e-05 & 0.005\\
+Explicit+LM & 0.037 & -0.194 & 0.359 & 6.97e-06 & 0.068\\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+There is however a visible difference for the longest expiry. In particular, the SABR parameters $\rho, \nu$ have a slightly different meaning: the smile resulting from the normal explicit initial guess is lower for low strikes with the arbitrage free PDE approach than the smile computed from the same guess with the normal formula (Figure \ref{fig:normal_vs_arbfree_fit_10y10y}).
+
+\begin{figure}[htbp]
+  \caption{\label{fig:normal_vs_arbfree_fit_10y10y}Initial guess and calibrated smile for a May 2014 10y10y Swaption using the Arbitrage-free SABR PDE approach }
+\begin{center}
+ \includegraphics[width=12cm]{normal_vs_arbfree_fit_10y10y.eps}
+\end{center}
+\end{figure}
 
 \section{Conclusion}
+We have presented an explicit initial guess procedure to calibrate the lognormal SABR formula as well as the normal SABR formula, that, despite its simplicity, works particularly well for a variety of different SABR configurations. It allows for faster calibration, by using only a local minimizer, as well as a more reliable calibration, by avoiding the problem of multiple best fits that can appear with global minimizers. 
+We have shown it can also be applied to the arbitrage free SABR model with success, even the guess is further away from the target for longer maturities, due to the mismatch between the arbitrage free SABR model and the classic normal SABR formula.
+
 \newpage
 \bibliographystyle{rAMF}
 %\bibliographystyle{ieeetr}

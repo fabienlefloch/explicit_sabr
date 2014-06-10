@@ -59,15 +59,18 @@ taylor(v0(alpha),alpha,0,2)+
 
 ==> v0 = alpha f^beta
 
-v1(alpha):= −(((3*f^3*nu^3*rho^3−3*alpha*beta*f^2*f^beta*nu^2*rho^2+(−2*f^3*nu^3+(−13*alpha^2*beta^2+8*alpha^2*beta)*f*(f^beta)^2*nu)*rho−2*alpha*beta*f^2*f^beta*nu^2+(−3*alpha^3*beta^3+8*alpha^3*beta^2−4*alpha^3*beta)*(f^beta)^3)*T−24*f^3*nu*rho−24*alpha*beta*f^2*f^beta)*z)/(48*f^2);
+v1(alpha):= -(((3*f^3*nu^3*rho^3−3*alpha*beta*f^2*f^beta*nu^2*rho^2+(−2*f^3*nu^3+(−13*alpha^2*beta^2+8*alpha^2*beta)*f*(f^beta)^2*nu)*rho−2*alpha*beta*f^2*f^beta*nu^2+(−3*alpha^3*beta^3+8*alpha^3*beta^2−4*alpha^3*beta)*(f^beta)^3)*T−24*f^3*nu*rho−24*alpha*beta*f^2*f^beta)*z)/(48*f^2);
 taylor(v1(alpha),alpha,0,2);
 
 ==> v1 = 1/2*rho*nu*f+1/2*beta*alpha*f^beta
-v2(alpha) := (((9*f^4*nu^4*rho^4+(−18*alpha*beta−9*alpha)*f^3*f^beta*nu^3*rho^3+(−12*f^4*nu^4+(12*alpha^2*beta^2+3*alpha^2*beta)*f^2*(f^beta)^2*nu^2)*rho^2+((12*alpha*beta+6*alpha)*f^3*f^beta*nu^3+(39*alpha^3*beta^3−45*alpha^3*beta^2+15*alpha^3*beta)*f*(f^beta)^3*nu)*rho+4*f^4*nu^4+(4*alpha^2*beta^2−2*alpha^2*beta)*f^2*(f^beta)^2*nu^2+(13*alpha^4*beta^4−43*alpha^4*beta^3+40*alpha^4*beta^2−12*alpha^4*beta)*(f^beta)^4)*T−72*f^4*nu^2*rho^2+72*alpha*f^3*f^beta*nu*rho+48*f^4*nu^2+(24*alpha^2*beta^2+24*alpha^2*beta)*f^2*(f^beta)^2)*z^2)/(288*alpha*f^2*f^beta);
+
+v2(alpha) := (((9*f^4*nu^4*rho^4+
+(−18*alpha*beta−9*alpha)*f^3*f^beta*nu^3*rho^3+(−12*f^4*nu^4+(12*alpha^2*beta^2+3*alpha^2*beta)*f^2*(f^beta)^2*nu^2)*rho^2+((12*alpha*beta+6*alpha)*f^3*f^beta*nu^3+(39*alpha^3*beta^3−45*alpha^3*beta^2+15*alpha^3*beta)*f*(f^beta)^3*nu)*rho+4*f^4*nu^4+
+(4*alpha^2*beta^2−2*alpha^2*beta)*f^2*(f^beta)^2*nu^2+(13*alpha^4*beta^4−43*alpha^4*beta^3+40*alpha^4*beta^2−12*alpha^4*beta)*(f^beta)^4)*T−72*f^4*nu^2*rho^2+72*alpha*f^3*f^beta*nu*rho+48*f^4*nu^2+(24*alpha^2*beta^2+24*alpha^2*beta)*f^2*(f^beta)^2)*z^2)/(
+288*alpha*f^2*f^beta);
 taylor(v2(alpha),alpha,0,2);
 
 ==> v2= f^2/(alpha*f^beta)*(1/6*nu^2-1/4*nu^2*rho^2)+1/4*f*nu*rho+1/12*(beta^2+beta)f^beta*alpha
-
 
 f0 = alpha f^beta
 f1 = 1/2*rho*nu*f+1/2*beta*alpha*f^beta
