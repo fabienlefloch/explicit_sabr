@@ -145,7 +145,7 @@ The idea is to find $\alpha, \rho, \nu$ that matches the at-the-money implied vo
 &+ \frac{1}{12\alpha (f+b)^{\beta-1}}\left((1-\beta)^2(\alpha (f+b)^{\beta-1})^2 + \nu^2(2-3\rho^2)\right)z^2
 \end{align}
 
-This is the same expansion used in \citep[equation (3.1a)]{hagan2002managing} to explain the phenomenology and dynamic of the SABR model. We have then:
+This is the same expansion used in \citep[equation (3.1a)]{hagan2002managing} to explain the phenomenology and dynamic of the SABR model. It can also be found from the expansion of \citep{lorig2014implied} by using the order-0 expansion for the at-the-money implied volatility, the order-1 expansion for the at-the-money skew, and the order-2 for the at-the-money curvature and ignore terms quadratic in time to expiry $T^2$. Or more simply it can be rederived from a Taylor expansion, neglecting higher order terms as in Appendix \ref{apx:normal_expansion}. We have then:
 % expansions obtained with the formula from \citep{lorig2014implied}. Applied to the shifted SABR model, their second order expansion of the implied volatility $v$ is $v = v_0 + v_1 + v_2$ where 
 %lorig formula for order 2 %
 %\begin{align*}
@@ -186,10 +186,17 @@ Our initial guess is then $(\alpha_1, \rho_0, \nu_0)$.
 %\rho_1 &= \frac{1}{\nu_1}\left(2\sigma_0'+(1-\beta)\sigma_1\right)          
 %\end{align}
 \subsection{Normal volatility}
-When the input volatilities are normal (bpvol), we can just convert them to equivalent lognormal volatilities (eventually relying on some accurate expansion of the normal volatility at-the-money), and apply the same method as in the previous section to find the initial guess. Instead, we prefer to work directly with normal volatility and derive a simple expansion of the normal formula in $z=\log\left(\frac{K+b}{f+b}\right)$ around $z=0$ (see Appendix \ref{apx:normal_expansion});
+When the input volatilities are normal (bpvol), we can just convert them to equivalent lognormal volatilities and apply the same method as in the previous section to find the initial guess. In our case, because the initial guess method depends mostly on volatilities closest to the money, we can also rely on another simple expansion based on the work of \citep{lorig2014implied}:
+\begin{align}
+\sigma_B &= v_0 - \frac{1}{2}v_0 z + \frac{1}{96}v_0(8z^2+T v_0^2 (4-T v_0^2)) \nonumber \\
+         &+ \frac{1}{192}T z v_0^3 (-12+5T v_0^2)
+\end{align}
+with $v_0 = \frac{\sigma_N}{f}$ and $z=\log(\frac{K}{f})$, where the last term is of order-3.
+
+Instead, we prefer to work directly with normal volatility and derive a simple expansion of the normal formula in $z=\log\left(\frac{K+b}{f+b}\right)$ around $z=0$ (see Appendix \ref{apx:normal_expansion});
 
 \begin{align}
-\sigma_N(z) &= \alpha (f+b)^\beta + \frac{1}{2}\left(\rho \nu (f+b)+\beta \alpha (f+b)^\beta \right)z\\
+\sigma_N(z) &= \alpha (f+b)^\beta + \frac{1}{2}\left(\rho \nu (f+b)+\beta \alpha (f+b)^\beta \right)z\nonumber\\
 &+ \left[\frac{1}{12\alpha (f+b)^{\beta-2}}(2\nu^2-3\rho^2 \nu^2)+\frac{1}{4} \rho \nu (f+b)+\frac{1}{12}(\beta^2+\beta)\alpha (f+b)^\beta \right]z^2
 \end{align}
 
@@ -219,13 +226,7 @@ Note that this polynomial is slightly different from the lognormal volatility po
   
 %\subsubsection{Expansion of normal volatility at the money}
 %A normal volatility $\sigma_N$ can be converted almost exactly to a lognormal volatility $\sigma_B$ by first pricing an out of the money option with the Bachelier formula, and inverting the price to find the lognormal volatility with an accurate solver \citep{jackel2013let}. 
-%In our case, because the initial guess method depends mostly on volatilities closest to the money, we can also rely on another simple expansion based on the work of \citep{lorig2014implied}:
-%\begin{align}
-%\sigma_B &= v_0 - \frac{1}{2}v_0 z + \frac{1}{96}v_0(8z^2+T v_0^2 (4-T v_0^2)) \\
-%         &+ \frac{1}{192}T z v_0^3 (-12+5T v_0^2)
-%\end{align}
-%with $v_0 = \frac{\sigma_N}{f}$ and $z=\log(\frac{K}{f})$, where the last term is of order-3.
-
+%
 \subsection{How to find the at-the-money volatility, slope and curvature?}
 The simplest is to fit a parabola to the three closest points around the forward with coordinates $(z_{-1}, \hat{\sigma}_{-1}), (z_0,\hat{\sigma}_0), (z_{1},\hat{\sigma}_1)$. This is equivalent to a 3 points finite difference on a non uniform grid. We have then:
 \begin{align}
@@ -281,7 +282,7 @@ The root mean square error in implied volatilities of the fit is always lower th
 \begin{figure}[htbp]
   \caption{\label{fig:smart_initialguess_sabr_input}The various stages of the initial guess method for the slice of expiry 0.479 year}
 \begin{center}
- \includegraphics[width=16cm]{explicit_fit_sabr_0479_beta1.eps}
+ \includegraphics[width=12cm]{explicit_fit_sabr_0479_beta1.eps}
 \end{center}
 \end{figure}
 
@@ -426,6 +427,55 @@ A Taylor expansion of the normal formula (Equation \ref{eqn:normal_sabr}) in $z 
  + o(\alpha^2)
 \end{align*}
 Assuming that $\nu$ is also small and neglecting higher order cross terms leads to our simple expansion.
+
+\section{Least squares parabola}
+The parabola $a + b x + c x^2$ that minimizes the square error $E=\sum_{i=1}^{n} w_i\left(y_i - (a + b x_i + c x_i^2)\right)^2 $ at the points $(x_i, y_i)$ with weights $w_i$ verifies:
+\begin{align}
+\begin{cases}
+\frac{\partial E}{\partial a} &= 2\sum\limits_{i=1}^{n} w_i\left(y_i - (a + b x_i + c x_i^2 )\right) = 0\\
+\frac{\partial E}{\partial b} &= 2\sum\limits_{i=1}^{n} w_i x_i \left(y_i - (a + b x_i + c x_i^2 )\right) = 0\\
+\frac{\partial E}{\partial c} &= 2\sum\limits_{i=1}^{n} w_i x_i^2 \left(y_i - (a + b x_i + c x_i^2 )\right) = 0
+\end{cases}
+\end{align}
+The coefficients $a, b, c$ are the solution of the following linear system:
+\newcommand{\FF}{\vphantom{\sum\limits_{i=1}^{n}}}
+\begin{equation}
+\begin{pmatrix}
+\sum\limits_{i=1}^{n} w_i & \sum\limits_{i=1}^{n} w_i x_i & \sum\limits_{i=1}^{n} w_i x_i^2 \\
+\sum\limits_{i=1}^{n} w_i x_i & \sum\limits_{i=1}^{n} w_i x_i^2 & \sum\limits_{i=1}^{n} w_i x_i^3 \\
+\sum\limits_{i=1}^{n} w_i x_i^2 & \sum\limits_{i=1}^{n} w_i x_i^3 & \sum\limits_{i=1}^{n} w_i x_i^4  
+\end{pmatrix}
+\begin{pmatrix}
+\FF a\\
+\FF b\\
+\FF c
+\end{pmatrix}
+=
+\begin{pmatrix}
+\sum\limits_{i=1}^{n} w_i y_i\\
+\sum\limits_{i=1}^{n} w_i x_i y_i\\
+\sum\limits_{i=1}^{n} w_i x_i^2 y_i
+\end{pmatrix}
+\end{equation}
+It can be useful to pin a specific point $(f,\sigma_f)$, for example to make sure that the at-the-money volatility is exactly represented by the parabola as it is available in the swaption market. In this case the system to solve becomes:
+\begin{equation}
+\begin{pmatrix}
+\FF 1 & f & f^2 \\
+\sum\limits_{i=1}^{n} w_i x_i & \sum\limits_{i=1}^{n} w_i x_i^2 & \sum\limits_{i=1}^{n} w_i x_i^3 \\
+\sum\limits_{i=1}^{n} w_i x_i^2 & \sum\limits_{i=1}^{n} w_i x_i^3 & \sum\limits_{i=1}^{n} w_i x_i^4  
+\end{pmatrix}
+\begin{pmatrix}
+\FF a\\
+\FF b\\
+\FF c
+\end{pmatrix}
+=
+\begin{pmatrix}
+\FF \sigma_f\\
+\sum\limits_{i=1}^{n} w_i x_i y_i\\
+\sum\limits_{i=1}^{n} w_i x_i^2 y_i
+\end{pmatrix}
+\end{equation}
 \bibliographystyle{rAMF}
 %\bibliographystyle{ieeetr}
 \bibliography{lefloch_smart_sabr}
