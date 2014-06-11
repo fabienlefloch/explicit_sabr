@@ -105,7 +105,7 @@ m<-read.table('/home/fabien/mypapers/explicit_sabr/two_sabr_1_smile.txt', header
 m$Strike <- as.numeric(as.character(m$Strike))
 m$Volatility <- as.numeric(as.character(m$Volatility))
 qplot(Strike, Volatility, data=m[m$alpha != "Reference",], color=alpha, linetype=alpha, geom="line")+geom_point(data=m[m$alpha=="Reference",])+scale_color_manual("Parameters", values=c(3,1,2), breaks=c("Low","High","Reference"), labels=c(expression(paste(alpha," = 0.237")), expression(paste(alpha," = 0.850")), "reference vols"))+scale_linetype_manual("Parameters", values=c(2,1,0), c("Low","High","Reference"), labels=c(expression(paste(alpha," = 0.237")), expression(paste(alpha," = 0.850")), "reference vols"))+theme(legend.position="bottom")
-ggsave(file="/home/fabien/mypapers/explicit_sabr/two_sabr_1_smile.eps",width=7,height=7)
+ggsave(file="/home/fabien/mypapers/explicit_sabr/two_sabr_1_smile.eps",width=5,height=5)
 
 m<-read.table('/home/fabien/mypapers/explicit_sabr/explicit_fit_1m_beta05_arb.txt', header=TRUE)
 m$Strike <- as.numeric(as.character(m$Strike))
@@ -115,6 +115,11 @@ qplot(Strike, bpvol, data=m[m$Method != "Reference",], color=Method, geom="line"
 m<-read.table('/home/fabien/mypapers/explicit_sabr/normal_vs_arbfree_fit_10y10y.txt', header=TRUE)
 m$Strike <- as.numeric(as.character(m$Strike))
 m$bpvol <- as.numeric(as.character(m$Volatility))
+qplot(Strike, bpvol, data=m[m$Method != "Reference",], color=Method, geom="line")+geom_point(data=m[m$Method=="Reference",])+theme(legend.position="bottom")+ guides(colour = guide_legend(nrow = 2))
+ggsave(file="/home/fabien/mypapers/explicit_sabr/normal_vs_arbfree_fit_10y10y.eps",width=6,height=6)
+
+m<-read.table('/home/fabien/mypapers/explicit_sabr/normal_vs_arbfree_fit_1m1y.txt', header=TRUE)
+m$Strike <- as.numeric(as.character(m$Strike))
+m$bpvol <- as.numeric(as.character(m$Volatility))
 qplot(Strike, bpvol, data=m[m$Method != "Reference",], color=Method, geom="line")+geom_point(data=m[m$Method=="Reference",])+theme(legend.position="bottom")
-ggsave(file="/home/fabien/mypapers/explicit_sabr/normal_vs_arbfree_fit_10y10y.eps",width=7,height=7)
 

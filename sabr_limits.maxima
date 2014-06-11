@@ -115,3 +115,39 @@ taylor(v2(alpha),alpha,0,2);
 ==> (-1/4*nu^2*rho^2+1/12*nu^2) / v0 + v0/12*(beta-1)^2
 
 
+NEW SABR OUT FORMULA
+z=f-K = f*(1-K/f)
+K^beta = (f-z)^beta
+(0.5*(f+k))^(1-beta) = (0.5*f+0.5*f*exp(z))^(1-beta)
+xsi(z) := nu/alpha*f^(1-beta)*(1-exp((1-beta)*z))/(1-beta);
+x(z) :=  log((sqrt(1-2*rho*xsi(z)+xsi(z)^2)-rho+xsi(z))/(1-rho));
+h(z) := 1/24*nu^2*(-1+3*(xsi(z)+rho-rho*sqrt(1+2*rho*xsi(z)+xsi(z)^2))*x/nu/sqrt(1+2*rho*xsi(z)+xsi(z)^2)) +  (2*beta*(beta-1)-beta*beta)*(0.5*f+0.5*f*exp(z))^(2*beta-2)/48*alpha^2*((1-rho^2)+((xsi(z)+rho)*sqrt(1+2*rho*xsi(z)+xsi(z)^2)-rho)*x/nu);
+v(z) := f*(1-exp(z))/x(z)*nu*(1+(h(z)+rho*nu*alpha*beta/4*(0.5*f+0.5*f*exp(z))^(beta-1))*T);
+taylor(v(z),z,0,2);
+
+0
+v0(alpha):=−(((alpha^3*beta^2−2*alpha^3*beta)*(f^beta)^3*rho^2−12*alpha^2*beta*f*(f^beta)^2*nu*rho+2*alpha*f^2*f^beta*nu^2+(−alpha^3*beta^2+2*alpha^3*beta)*(f^beta)^3)*T−48*alpha*f^2*f^beta)/(48*f^2);
+taylor(v0(alpha),alpha,0,2);
+=> v0 = -alpha*f^beta
+
+1
+v1(alpha) := +(((((12*f^3*nu^2+(−2*alpha^2*beta^2+4*alpha^2*beta)*f*(f^beta)^2)*rho^2−12*f^3*nu^2+(−2*alpha^2*beta^2+4*alpha^2*beta)*f*(f^beta)^2)*x+(−alpha^2*beta^2+2*alpha^2*beta)*f*(f^beta)^2*nu*rho^3+(12*alpha*beta*f^2*f^beta*nu^2+(−3*alpha^3*beta^3+8*alpha^3*beta^2−4*alpha^3*beta)*(f^beta)^3)*rho^2+
+(−2*f^3*nu^3+(25*alpha^2*beta^2−14*alpha^2*beta)*f*(f^beta)^2*nu)*rho−2*alpha*beta*f^2*f^beta*nu^2+(3*alpha^3*beta^3−8*alpha^3*beta^2+4*alpha^3*beta)*(f^beta)^3)*T+48*f^3*nu*rho+48*alpha*beta*f^2*f^beta)*z)/(96*f^2);
+taylor(v1(alpha),alpha,0,2);
+
+1/2*f*rho*nu+1/2*beta*alpha*f^beta
+
+2
+v2(alpha) := (((((144*f^4*nu^3+(−12*alpha^2*beta^2+24*alpha^2*beta)*f^2*(f^beta)^2*nu)*rho^3+
+(36*alpha*f^3*f^beta*nu^2+(−12*alpha^3*beta^3+30*alpha^3*beta^2−12*alpha^3*beta)*f*(f^beta)^3)*rho^2+(−144*f^4*nu^3+(12*alpha^2*beta^2−24*alpha^2*beta)*f^2*(f^beta)^2*nu)*rho−36*alpha*f^3*f^beta*nu^2+(−12*alpha^3*beta^3+30*alpha^3*beta^2−12*alpha^3*beta)*f*(f^beta)^3)*x+(3*alpha^2*beta^2−6*alpha^2*beta)*f^2*(f^beta)^2*nu^2*rho^4+(−36*alpha*beta*f^3*f^beta*nu^3+(−6*alpha^3*beta^3+15*alpha^3*beta^2−6*alpha^3*beta)*f*(f^beta)^3*nu)*rho^3+
+(6*f^4*nu^4+(31*alpha^2*beta^2+10*alpha^2*beta)*f^2*(f^beta)^2*nu^2+(−13*alpha^4*beta^4+40*alpha^4*beta^3−31*alpha^4*beta^2+6*alpha^4*beta)*(f^beta)^4)*rho^2+
+((24*alpha*beta−6*alpha)*f^3*f^beta*nu^3+(72*alpha^3*beta^3−57*alpha^3*beta^2+6*alpha^3*beta)*f*(f^beta)^3*nu)*rho−4*f^4*nu^4−6*alpha^2*beta*f^2*(f^beta)^2*nu^2+(13*alpha^4*beta^4−40*alpha^4*beta^3+31*alpha^4*beta^2−6*alpha^4*beta)*(f^beta)^4)*T−144*f^4*nu^2*rho^2+144*alpha*f^3*f^beta*nu*rho+96*f^4*nu^2+
+(48*alpha^2*beta^2+48*alpha^2*beta)*f^2*(f^beta)^2)*z^2)/(576*alpha*f^2*f^beta);
+taylor(v2(alpha),alpha,0,2);
+
+(-72/288*rho^2+48/288)*nu^2*f^(2-beta)/alpha + 1/4*f*rho*nu + 48/576(beta^2+beta)f^beta*alpha
+
+f0 = alpha f^beta
+f1 = 1/2*rho*nu*f+1/2*beta*alpha*f^beta
+f2= f^2/(alpha*f^beta)*(1/3*nu^2-1/2*nu^2*rho^2)+1/2*f*nu*rho+1/6*(beta^2+beta)f^beta*alpha
+
