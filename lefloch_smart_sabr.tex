@@ -242,11 +242,11 @@ w_{1} &= \frac{1}{(z_{1}-z_{-1})(z_{1}-z_{0})}
 \end{align}
 In our experience, using higher order approximations like a 5 points finite difference (equivalent to a quartic on 5 points), or a cubic spline does not lead to any visible improvement in accuracy on our problem.
  
-When the input data is noisy, one could resort to a best fit parabola around the five closest points from the forward, which can be reduced to solving simple linear system. When the volatility at the forward is already present in the input data, we make sure the parabola passes exactly through it.
+When the input data is noisy, it can be useful to resort to a best fit parabola around the five or seven closest points from the forward, which can be reduced to solving simple linear system (Appendix \ref{apx:parabola}). When the volatility at the forward is already present in the input data, we can also make sure that the parabola passes exactly through it. We have noticed that including further away points in the estimation of the at-the-money curvature could be particularly important when the curvature is relatively small, for example for long-term options quotes (10 to 20 years) with a bit of noise. In some extreme situations, the three points curvature can be slightly negative and not allow for a good initial guess, as it can not represent such curvatures, while the seven points curvature will be accurate enough.
 
-Another approach is to repeat the initial guess procedure with a parabola on different sets of three points further away from the forward and select the guess corresponding to the best overall fit.
+Another approach would be to repeat the initial guess procedure with a parabola on different sets of three points further away from the forward and select the guess corresponding to the best overall fit.
 
-In our numerical tests we will select the guess that gives the minimum mean square error in volatilities between the two guesses stemming from the 3-points parabola and the 5-points parabola.
+In our numerical tests we will select the guess that gives the minimum mean square error in volatilities between the two guesses stemming from the 3-points parabola and the 7-points parabola.
 \section{Almost exact inversion of SABR smiles}
 We use the SABR parameters found by calibration of the lognormal SABR model on the S\&P500 options in December 2008 as starting point (Table \ref{tbl:smart_initialguess_sabr_input}). From those we regenerate a discrete set of implied volatilities for 12 strikes and 11 expiries using the lognormal SABR formula with $\beta = 1$. And finally we apply the explicit initial guess procedure to each expiry.
 
@@ -282,7 +282,7 @@ The root mean square error in implied volatilities of the fit is always lower th
 \begin{figure}[htbp]
   \caption{\label{fig:smart_initialguess_sabr_input}The various stages of the initial guess method for the slice of expiry 0.479 year}
 \begin{center}
- \includegraphics[width=12cm]{explicit_fit_sabr_0479_beta1.eps}
+ \includegraphics[width=16cm]{explicit_fit_sabr_0479_beta1.eps}
 \end{center}
 \end{figure}
 
@@ -353,7 +353,7 @@ Figures \ref{fig:explicit_fit_1m_beta05}, \ref{fig:explicit_fit_2y_beta05} and \
 \begin{figure}[h!]
   \caption{\label{fig:explicit_fit_1m_beta05}Initial guess and calibrated smile for a May 2014 1m5y Swaption }
 \begin{center}
- \includegraphics[width=12cm]{explicit_fit_1m_beta05.eps}
+ \includegraphics[width=13cm]{explicit_fit_1m_beta05.eps}
 \end{center}
 \end{figure}
 
@@ -409,8 +409,10 @@ There is however a visible difference for the longest expiry. In particular, the
 
 \section{Conclusion}
 We have presented an explicit initial guess procedure to calibrate the lognormal SABR formula as well as the normal SABR formula, that, despite its simplicity, works particularly well for a variety of different SABR configurations. It allows for faster calibration, by using only a local minimizer, as well as a more reliable calibration, by avoiding the problem of multiple best fits that can appear with global minimizers. 
-We have shown it can also be applied to the arbitrage free SABR model with success, even the guess is further away from the target for longer maturities, due to the mismatch between the arbitrage free SABR model and the classic normal SABR formula.
 
+We have shown it can also be applied to the arbitrage free SABR model with success, even if the guess is further away from the target for longer maturities, due to the mismatch between the arbitrage free SABR model and the classic normal SABR formula.
+
+The same approach to calibration, namely to recover model parameters of a second or third order expansion from a best fit parabola or cubic can be applied to other models. Such expansions can be relatively easily derived for a large class of stochastic (local) volatility models using the techniques of \citep{lorig2014implied}.
 \newpage
 \appendix
 \section{Simple expansion of the normal formula}\label{apx:normal_expansion}
@@ -428,7 +430,7 @@ A Taylor expansion of the normal formula (Equation \ref{eqn:normal_sabr}) in $z 
 \end{align*}
 Assuming that $\nu$ is also small and neglecting higher order cross terms leads to our simple expansion.
 
-\section{Least squares parabola}
+\section{Least squares parabola}\label{apx:parabola}
 The parabola $a + b x + c x^2$ that minimizes the square error $E=\sum_{i=1}^{n} w_i\left(y_i - (a + b x_i + c x_i^2)\right)^2 $ at the points $(x_i, y_i)$ with weights $w_i$ verifies:
 \begin{align}
 \begin{cases}
