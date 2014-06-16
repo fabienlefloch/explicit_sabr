@@ -113,7 +113,7 @@ rho^4−18*alpha*beta*f^3*f^beta*nu^3*rho^3+(−12*f^4*nu^4+(12*alpha^2*beta^2�
 taylor(v2(alpha),alpha,0,2);
 
 ==> (-1/4*nu^2*rho^2+1/12*nu^2) / v0 + v0/12*(beta-1)^2
-
+//beta=0 => -1/48*rho*nu*alpha^2*T/f^2 -3/144
 
 NEW SABR OUT FORMULA
 z=f-K = f*(1-K/f)
