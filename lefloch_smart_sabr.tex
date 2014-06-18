@@ -45,7 +45,7 @@ In contrast, the method proposed here is simple and explicit; a system of equati
 \section{SABR normal and lognormal formulas}
 
 \subsection{The SABR model}
-In the shifted SABR model, the asset forward follows the following stochastic differential equation:
+In the shifted SABR model, the asset forward follows the following stochastic equation:
 \begin{align}
 dF &= V (F+b)^\beta dW_1\\
 dV &= \nu V dW_2
@@ -69,6 +69,11 @@ g(K) &= \frac{1}{24} (\beta^2-2\beta) (f+b)^{\beta-1} (K+b)^{\beta-1} \alpha^2\\
 x(K) &= \frac{1}{\nu}\log\left(\frac{\sqrt{1-2\rho\zeta(K)+\zeta^2(K)}-\rho+\zeta(K)}{1-\rho} \right)
 \end{align*}
 
+When $f=K$, 
+\begin{align}
+\sigma_N(f) &= \alpha (f+b)^\beta \left[1+\left(g(f)+\frac{1}{4}\rho\nu\alpha\beta(f+b)^{\beta-1}+\frac{1}{24}(2-3\rho^2)\nu^2\right)T\right]
+\end{align}
+
 When $\beta = 1$,
 \begin{align*}
 g(K) = -\frac{1}{24}\alpha^2 &\texttt{ , } \zeta(K) = \frac{\nu}{\alpha} \log\left(\frac{f+b}{K+b}\right)
@@ -78,19 +83,6 @@ When $\beta = 0$,
 \begin{align*}
 g(K) = 0 &\texttt{ , }\zeta(K) = \frac{\nu}{\alpha} \left(f-K\right)
 \end{align*}
-
-
-When $\nu \to 0$,
-\begin{align*}
-x(K) \sim \frac{1}{\nu}\zeta(K)
-\end{align*}
-
-When $f=K$, 
-\begin{align}
-\sigma_N(f) &= \alpha (f+b)^\beta \left[1+\left(g(f)+\frac{1}{4}\rho\nu\alpha\beta(f+b)^{\beta-1}+\frac{1}{24}(2-3\rho^2)\nu^2\right)T\right]
-\end{align}
-
-
 %recap of SABR Hagan 2002 formula and obloj
 \subsection{Lognormal formula}
 The lognormal formula is very similar to the normal formula, $f-K$ becomes $\log(\frac{f}{K})$ and $g$ includes a small adjustment:
@@ -105,22 +97,21 @@ g(K) &= \frac{1}{24} (\beta-1)^2 (f+b)^{\beta-1} (K+b)^{\beta-1} \alpha^2\\
 \zeta(K) &= \frac{\nu}{\alpha (1-\beta)} \left( (f+b)^{1-\beta} - (K+b)^{1-\beta} \right)\\
 x(K) &= \frac{1}{\nu}\log\left(\frac{\sqrt{1-2\rho\zeta(K)+\zeta^2(K)}-\rho+\zeta(K)}{1-\rho} \right)
 \end{align*}
-We have $g(K) = 0$ when $\beta = 1$ and $g(K) = \frac{1}{24(f+b)(K+b)}\alpha^2$ when $\beta = 0$, while $\zeta(K)$ and $x(K)$ are the same as in the normal formula.
 
 When $f=K$, 
 \begin{align}
 \sigma_B(f) &= \alpha (f+b)^{\beta-1} \left[1+\left(g(f)+\frac{1}{4}\rho\nu\alpha\beta(f+b)^{\beta-1}+\frac{1}{24}(2-3\rho^2)\nu^2\right)T\right]
 \end{align}
 
+When $\beta = 1$,
+\begin{align*}
+g(K) = 0 &\texttt{ , } \zeta(K) = \frac{\nu}{\alpha} \log\left(\frac{f+b}{K+b}\right)
+\end{align*}
 
-%\begin{align*}
-%g(K) = 0 &\texttt{ , } \zeta(K) = \frac{\nu}{\alpha} \log\left(\frac{f+b}{K+b}\right)
-%\end{align*}
-%
-%When $\beta = 0$,
-%\begin{align*}
-%g(K) = \frac{1}{24(f+b)(K+b)}\alpha^2 &\texttt{ , }\zeta(K) = \frac{\nu}{\alpha} \left(f-K\right)
-%\end{align*}
+When $\beta = 0$,
+\begin{align*}
+g(K) = \frac{1}{24(f+b)(K+b)}\alpha^2 &\texttt{ , }\zeta(K) = \frac{\nu}{\alpha} \left(f-K\right)
+\end{align*}
 It is important not to forget that Hagan derived the lognormal formula as an approximation of the normal formula \citep{hagan2002managing}: it won't be accurate or realistic at all in cases where the implied volatility is very high (see Table \ref{tbl:lognormal_high_alpha}). This is not so realistic for market implied volatilities, but it can have an influence in the global minimization procedure, as global minimizers like differential evolution will try out extreme values.
 
 Of course, in order to obtain a lognormal volatility, it is also possible to solve, with high accuracy, for the Black implied volatility of a given normal volatility: we can firstly compute corresponding Bachelier option price with a fast evaluation method \citep{lefloch2014bpvol} and secondly use a robust and accurate Black implied volatility solver \citep{jackel2013let, li2011adaptive}.
