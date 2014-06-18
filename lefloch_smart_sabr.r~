@@ -66,25 +66,25 @@ m<-read.table('/home/fabien/mypapers/explicit_sabr/explicit_fit_1m_beta05.txt', 
 m <- m[m$Method != "Explicit-0",]
 m$Strike <- as.numeric(as.character(m$Strike))
 m$bpvol <- as.numeric(as.character(m$bpvol))
-qplot(Strike, bpvol, data=m[m$Method != "Reference",], color=Method, geom="line")+geom_point(data=m[m$Method=="Reference",])+scale_color_manual(values=c(1,2,3))+theme(legend.position="bottom")
+qplot(Strike, bpvol, data=m[m$Method != "Reference",], color=Method, linetype=Method, geom="line")+geom_point(data=m[m$Method=="Reference",])+scale_color_manual(values=c(3,1,2))+scale_linetype_manual(values=c(2,1,0))+theme(legend.position="bottom")
 ggsave(file="/home/fabien/mypapers/explicit_sabr/explicit_fit_1m_beta05.eps",width=5,height=5)
 
 m<-read.table('/home/fabien/mypapers/explicit_sabr/explicit_0a_fit_1m1y_beta05.txt', header=TRUE)
 m$Strike <- as.numeric(as.character(m$Strike))
 m$bpvol <- as.numeric(as.character(m$bpvol))
-qplot(Strike, bpvol, data=m[m$Method != "Reference",], color=Method, geom="line")+geom_point(data=m[m$Method=="Reference",])+theme(legend.position="bottom")
+qplot(Strike, bpvol, data=m[m$Method != "Reference",], color=Method, linetype=Method, geom="line")+geom_point(data=m[m$Method=="Reference",])+scale_color_manual(values=c(3,1,2))+scale_linetype_manual(values=c(2,1,0))+theme(legend.position="bottom")
 ggsave(file="/home/fabien/mypapers/explicit_sabr/explicit_fit_1m1y_beta05.eps",width=5,height=5)
 
 m<-read.table('/home/fabien/mypapers/explicit_sabr/explicit_fit_2y_beta05.txt', header=TRUE)
 m$Strike <- as.numeric(as.character(m$Strike))
 m$bpvol <- as.numeric(as.character(m$bpvol))
-qplot(Strike, bpvol, data=m[m$Method != "Reference",], color=Method, geom="line")+geom_point(data=m[m$Method=="Reference",])+theme(legend.position="bottom")
+qplot(Strike, bpvol, data=m[m$Method != "Reference",], color=Method, linetype=Method, geom="line")+geom_point(data=m[m$Method=="Reference",])+scale_color_manual(values=c(3,1,2))+scale_linetype_manual(values=c(2,1,0))+theme(legend.position="bottom")
 ggsave(file="/home/fabien/mypapers/explicit_sabr/explicit_fit_2y_beta05.eps",width=5,height=5)
 
 m<-read.table('/home/fabien/mypapers/explicit_sabr/explicit_fit_10y_beta05.txt', header=TRUE)
 m$Strike <- as.numeric(as.character(m$Strike))
 m$bpvol <- as.numeric(as.character(m$bpvol))
-qplot(Strike, bpvol, data=m[m$Method != "Reference",], color=Method, geom="line")+geom_point(data=m[m$Method=="Reference",])+theme(legend.position="bottom")
+qplot(Strike, bpvol, data=m[m$Method != "Reference",], color=Method, linetype=Method, geom="line")+geom_point(data=m[m$Method=="Reference",])+scale_color_manual(values=c(3,1,2))+scale_linetype_manual(values=c(2,1,0))+theme(legend.position="bottom")
 ggsave(file="/home/fabien/mypapers/explicit_sabr/explicit_fit_10_beta05.eps",width=5,height=5)
 
 m<-read.table('/home/fabien/mypapers/explicit_sabr/explicit_fit_sabr_0153_beta1.txt', header=TRUE)
@@ -119,7 +119,7 @@ qplot(Strike, bpvol, data=m[m$Method != "Reference",], color=Method, geom="line"
 m<-read.table('/home/fabien/mypapers/explicit_sabr/normal_vs_arbfree_fit_10y10y.txt', header=TRUE)
 m$Strike <- as.numeric(as.character(m$Strike))
 m$bpvol <- as.numeric(as.character(m$Volatility))
-qplot(Strike, bpvol, data=m[m$Method != "Reference",], color=Method, geom="line")+geom_point(data=m[m$Method=="Reference",])+theme(legend.position="bottom")+ guides(colour = guide_legend(nrow = 2))
+qplot(Strike, bpvol, data=m[m$Method != "Reference",], color=Method, linetype=Method, geom="line")+geom_point(data=m[m$Method=="Reference",])+scale_color_manual(values=c(3,4,1,6,2))+scale_linetype_manual(values=c(2,3,1,5,0))+theme(legend.position="bottom")+ guides(colour = guide_legend(nrow = 2))
 ggsave(file="/home/fabien/mypapers/explicit_sabr/normal_vs_arbfree_fit_10y10y.eps",width=6,height=6)
 
 m<-read.table('/home/fabien/mypapers/explicit_sabr/normal_vs_arbfree_fit_1m1y.txt', header=TRUE)

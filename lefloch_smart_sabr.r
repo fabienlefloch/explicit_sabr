@@ -119,7 +119,7 @@ qplot(Strike, bpvol, data=m[m$Method != "Reference",], color=Method, geom="line"
 m<-read.table('/home/fabien/mypapers/explicit_sabr/normal_vs_arbfree_fit_10y10y.txt', header=TRUE)
 m$Strike <- as.numeric(as.character(m$Strike))
 m$bpvol <- as.numeric(as.character(m$Volatility))
-qplot(Strike, bpvol, data=m[m$Method != "Reference",], color=Method, linetype=Method, geom="line")+geom_point(data=m[m$Method=="Reference",])+scale_color_manual(values=c(3,4,1,6,2))+scale_linetype_manual(values=c(2,3,1,5,0))+theme(legend.position="bottom")+ guides(colour = guide_legend(nrow = 2))
+qplot(Strike, bpvol, data=m[m$Method != "Reference",], color=Method, linetype=Method, geom="line")+geom_point(data=m[m$Method=="Reference",])+scale_color_manual(values=c(3,4,1,8,2))+scale_linetype_manual(values=c(2,3,1,6,0))+theme(legend.position="bottom")+ guides(colour = guide_legend(nrow = 2))
 ggsave(file="/home/fabien/mypapers/explicit_sabr/normal_vs_arbfree_fit_10y10y.eps",width=6,height=6)
 
 m<-read.table('/home/fabien/mypapers/explicit_sabr/normal_vs_arbfree_fit_1m1y.txt', header=TRUE)
