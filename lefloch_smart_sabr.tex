@@ -33,13 +33,13 @@ The SABR stochastic volatility model is a very popular interpolator of implied v
 \section{Introduction}
 The SABR stochastic volatility model \citep{hagan2002managing} enjoys a high popularity as interpolator of implied volatilities, because, in practice, it fits rather well market implied volatility smiles for interest rate derivatives, fx derivatives and equity derivatives with a few parameters $\alpha, \rho, \nu$, and the dynamic of it can be easily controlled through its $\beta$ parameter, usually defined from historical series analysis for the relevant market.
 
-There are however known shortcomings: it is not arbitrage free as the probability density can become negative for low strikes and long maturities. Many authors have proposed various improvements to the original formula \citep{obloj2008fine, johnson2009arbitrage, paulot2009asymptotic, benaim2008arbitrage}. More recently the focus has been on finite difference techniques to guarantee the arbitrage-free property \citep{hagan2013arbitrage,lefloch2014fdmsabr} in a shifted SABR framework, to allow for negative rates. 
+There are however known shortcomings: it is not arbitrage free as the probability density can become negative for low strikes and long maturities. Many authors have proposed various improvements to the original formula \citep{obloj2008fine, johnson2009arbitrage, paulot2009asymptotic, benaim2008arbitrage}. More recently the focus has been on finite difference techniques to guarantee the arbitrage-free property \citep{andreasen2011zabr, hagan2013arbitrage,lefloch2014fdmsabr} in a shifted SABR framework, to allow for negative rates. 
 
 In practice, the adjustments to the original formula do not matter much in order to find a good initial guess for the calibration procedure. Once a good initial guess is found, a fast local minimizer like Levenberg-Marquardt can be used to calibrate the specific SABR implementation. 
 
-A first calibration method was described in \citep{west2005calibration}, fitting $\alpha$ exactly to the at-the-money implied volatility, and reducing the problem to a two-dimensional minimization in $(\rho,\nu)$. The Nelder-Mead method is proposed as the minimizer. It however still requires some initial guess, and can sometimes be unstable, especially with constraints \citep{lefloch2014nelder}. A numerical method to find an initial guess that fits the at-the-money volatility exactly and the at-the-money skew is proposed in \citep{gauthier2009fitting}. It requires however to solve numerically a two-dimensional non linear system of equations.
+A first calibration method was described in \citep{west2005calibration}, fitting $\alpha$ exactly to the at-the-money implied volatility, and reducing the problem to a two-dimensional minimization in $(\rho,\nu)$. The Nelder-Mead method is proposed as the minimizer. However, it still requires an initial guess, and can sometimes be unstable, especially with constraints \citep{lefloch2014nelder}. A numerical method to find an initial guess that fits the at-the-money volatility exactly and the at-the-money skew is proposed in \citep{gauthier2009fitting}. It requires the numerical solution of a two-dimensional non linear system of equations.
 
-In contrast, the method proposed here is explicit, a simple system of equations to fit the at-the-money volatility, skew, and curvature is solved analytically. A similar approach was applied to the Heston model in \citep{forde2012small} with the difference that, in their case, the Heston parameters describe a full volatility surface and the initial guess procedure relies on two expiries plus the short time at-the-money volatility to solve the 5 Heston parameters exactly. In the SABR case, there is just one expiry to consider and 3 parameters to fit. We will first present our method for the lognormal formula as well as for the normal formula, and then show its accuracy in calibrating real world smiles on the arbitrage-free model from \citet{hagan2013arbitrage} compared to a global optimization via differential evolution.
+In contrast, the method proposed here is simple and explicit; a system of equations to fit the at-the-money volatility, skew, and curvature is solved analytically. A similar approach was applied to the Heston model in \citep{forde2012small} with the difference that, in their case, the Heston parameters describe a full volatility surface and the initial guess procedure relies on two expiries plus the short time at-the-money volatility to solve the 5 Heston parameters exactly. In the SABR case, there is just one expiry to consider and 3 parameters to fit. We will first present our method for the lognormal formula as well as for the normal formula, and then show its accuracy in calibrating real world smiles on the arbitrage-free model from \citet{hagan2013arbitrage} compared to a global optimization via differential evolution.
 
 
 \section{SABR normal and lognormal formulas}
@@ -174,7 +174,7 @@ This system can be exactly solved to give a first guess $\alpha_0, \rho_0,\nu_0$
 \rho_0 &= \frac{1}{\nu_0}\left(2\sigma_0'+(1-\beta)\sigma_0\right) 
 \end{cases} 
 \end{align}
-We make sure to constrain $\nu_0$ to be strictly positive (for example by flooring it to $10^{-4}$) , and $\rho_0$ to be in [-1,1]. We then refine this first guess by solving exactly for the at-the-money volatility with the given $\rho_0$ and $\nu_0$. $\alpha_1$ is the root of the following third order polynomial\footnote{The root can be determined using Cardano's formula, see ADD REFERENCE TO NUMERICAL RECIPES...}:
+We make sure to constrain $\nu_0$ to be strictly positive (for example by flooring it to $10^{-4}$) , and $\rho_0$ to be in [-1,1]. We then refine this first guess by solving exactly for the at-the-money volatility with the given $\rho_0$ and $\nu_0$. $\alpha_1$ is the root of the following third order polynomial:
 \begin{align}
 \frac{(1-\beta)^2 T}{24 (f+b)^{2-2\beta}}\alpha^3+ \frac{\rho\beta\nu T}{4(f+b)^{1-\beta}}\alpha^2 + \left(1+\frac{2-3\rho^2}{24}\nu^2 T\right)\alpha - \sigma_0 (f+b)^{1-\beta} &= 0
 \end{align}
@@ -218,18 +218,19 @@ This system can be exactly solved to give a first guess $\alpha_0, \rho_0,\nu_0$
 \rho_0 &= \frac{1}{\nu_0 (f+b)}\left(2\sigma_0'-\beta\sigma_0\right) 
 \end{cases} 
 \end{align}
-As for the lognormal volatility guess, we refine this first guess by solving exactly for the at-the-money volatility with the given $\rho_0$ and $\nu_0$. $\alpha_1$ is a root of the following third order polynomial:
+As for the lognormal volatility guess, we refine this first guess by solving exactly for the at-the-money volatility with the given 
+$\rho_0$ and $\nu_0$. Then $\alpha_1$ is a root of the following third order polynomial:
 \begin{align}
 \frac{(\beta^2-2\beta) T}{24 (f+b)^{2-2\beta}}\alpha^3+ \frac{\rho\beta\nu T}{4(f+b)^{1-\beta}}\alpha^2 + \left(1+\frac{2-3\rho^2}{24}\nu^2 T\right)\alpha - \sigma_0 (f+b)^{-\beta} &= 0
 \end{align}
-Note that this polynomial is slightly different from the lognormal volatility polynomial. We take the $\alpha_1$ to be the smallest positive root.
+Note that this polynomial is slightly different from the lognormal volatility polynomial. Again we take the $\alpha_1$ to be the smallest positive root.
  
   
 %\subsubsection{Expansion of normal volatility at the money}
 %A normal volatility $\sigma_N$ can be converted almost exactly to a lognormal volatility $\sigma_B$ by first pricing an out of the money option with the Bachelier formula, and inverting the price to find the lognormal volatility with an accurate solver \citep{jackel2013let}. 
 %
 \subsection{How to find the at-the-money volatility, slope and curvature?}
-The simplest is to fit a parabola to the three closest points around the forward with coordinates $(z_{-1}, \hat{\sigma}_{-1}), (z_0,\hat{\sigma}_0), (z_{1},\hat{\sigma}_1)$. This is equivalent to a 3 points finite difference on a non uniform grid. We have then:
+The simplest is to fit a parabola to the three closest points around the forward with coordinates $(z_{-1}, \hat{\sigma}_{-1}), (z_0,\hat{\sigma}_0), (z_{1},\hat{\sigma}_1)$. This is equivalent to a 3 points finite difference on a non uniform grid. We then have:
 \begin{align}
 \sigma_0 &= z_0 z_1 w_{-1} \hat{\sigma}_{-1} + z_{-1} z_1 w_{0} \hat{\sigma}_{0} +  z_{-1} z_0w_{1} \hat{\sigma}_{1}\\
 \sigma_0' &= -(z_0 + z_1) w_{-1} \hat{\sigma}_{-1} - (z_{-1}+ z_1) w_{0} \hat{\sigma}_{0} -  (z_{-1}+ z_0)w_{1} \hat{\sigma}_{1}\\
