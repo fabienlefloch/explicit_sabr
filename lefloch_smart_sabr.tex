@@ -183,7 +183,7 @@ This system can be exactly solved to give a first guess $\alpha_0, \rho_0,\nu_0$
 \rho_0 &= \frac{1}{\nu_0}\left(2\sigma_0'+(1-\beta)\sigma_0\right) 
 \end{cases} 
 \end{align}
-We make sure to constrain $\nu_0$ to be strictly positive (for example by flooring it to $10^{-4}$) , and $\rho_0$ to be in [-1,1]. We then refine this first guess by solving exactly for the at-the-money volatility with the given $\rho_0$ and $\nu_0$. $\alpha_1$ is the root of the following third order polynomial:
+If $\nu_0^2 < 0$, we force $\rho_0$ in $\lbrace-1,1\rbrace$ with $\rho_0 = \sgn\left(2\sigma_0'+(1-\beta)\sigma_0\right)$, and recompute $\nu_0$ ignoring the curvature through $\nu_0 =\frac{1}{\rho_0}\left(2\sigma_0'+(1-\beta)\sigma_0\right)$. In practice, this allows to find a good initial guess even when the optimal $\rho$ is near -1 and when the smile has very little curvature. We then refine this first guess by solving exactly for the at-the-money volatility with the given $\rho_0$ and $\nu_0$. $\alpha_1$ is the root of the following third order polynomial:
 \begin{align}
 \frac{(1-\beta)^2 T}{24 (f+b)^{2-2\beta}}\alpha^3+ \frac{\rho\beta\nu T}{4(f+b)^{1-\beta}}\alpha^2 + \left(1+\frac{2-3\rho^2}{24}\nu^2 T\right)\alpha - \sigma_0 (f+b)^{1-\beta} &= 0
 \end{align}
