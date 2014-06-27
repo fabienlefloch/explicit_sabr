@@ -21,7 +21,7 @@
 \affil{$^\star$Calypso Technology, 106 rue de La Bo\'{e}tie, 75008 Paris\\$^\dag$Clarus Financial Technology, London}
 %
 \date{\today}
-\received{v1.0 released June 2014}
+\received{v1.1 released June 2014}
 
 \maketitle
 \newcommand{\sgn}{\mathop{\mathrm{sgn}}}
@@ -45,7 +45,7 @@ In contrast, the method proposed here is simple and explicit; a system of equati
 \section{SABR normal and lognormal formulas}
 
 \subsection{The SABR model}
-In the shifted SABR model, the asset forward follows the following stochastic equation:
+In the shifted SABR model, the asset forward follows the following stochastic differential equation:
 \begin{align}
 dF &= V (F+b)^\beta dW_1\\
 dV &= \nu V dW_2
@@ -69,11 +69,6 @@ g(K) &= \frac{1}{24} (\beta^2-2\beta) (f+b)^{\beta-1} (K+b)^{\beta-1} \alpha^2\\
 x(K) &= \frac{1}{\nu}\log\left(\frac{\sqrt{1-2\rho\zeta(K)+\zeta^2(K)}-\rho+\zeta(K)}{1-\rho} \right)
 \end{align*}
 
-When $f=K$, 
-\begin{align}
-\sigma_N(f) &= \alpha (f+b)^\beta \left[1+\left(g(f)+\frac{1}{4}\rho\nu\alpha\beta(f+b)^{\beta-1}+\frac{1}{24}(2-3\rho^2)\nu^2\right)T\right]
-\end{align}
-
 When $\beta = 1$,
 \begin{align*}
 g(K) = -\frac{1}{24}\alpha^2 &\texttt{ , } \zeta(K) = \frac{\nu}{\alpha} \log\left(\frac{f+b}{K+b}\right)
@@ -83,6 +78,16 @@ When $\beta = 0$,
 \begin{align*}
 g(K) = 0 &\texttt{ , }\zeta(K) = \frac{\nu}{\alpha} \left(f-K\right)
 \end{align*}
+
+When $\nu \to 0$,
+\begin{align*}
+x(K) \sim \frac{1}{\nu}\zeta(K)
+\end{align*}
+
+When $f=K$, 
+\begin{align}
+\sigma_N(f) &= \alpha (f+b)^\beta \left[1+\left(g(f)+\frac{1}{4}\rho\nu\alpha\beta(f+b)^{\beta-1}+\frac{1}{24}(2-3\rho^2)\nu^2\right)T\right]
+\end{align}
 %recap of SABR Hagan 2002 formula and obloj
 \subsection{Lognormal formula}
 The lognormal formula is very similar to the normal formula, $f-K$ becomes $\log(\frac{f}{K})$ and $g$ includes a small adjustment:
@@ -97,21 +102,22 @@ g(K) &= \frac{1}{24} (\beta-1)^2 (f+b)^{\beta-1} (K+b)^{\beta-1} \alpha^2\\
 \zeta(K) &= \frac{\nu}{\alpha (1-\beta)} \left( (f+b)^{1-\beta} - (K+b)^{1-\beta} \right)\\
 x(K) &= \frac{1}{\nu}\log\left(\frac{\sqrt{1-2\rho\zeta(K)+\zeta^2(K)}-\rho+\zeta(K)}{1-\rho} \right)
 \end{align*}
+%When $\beta=1$,
+%\begin{equation*}
+%g(K) = 0 \texttt{ , } \zeta(K) = \frac{\nu}{\alpha} \log\left(\frac{f+b}{K+b}\right)
+%\end{equation*}
+%
+%When $\beta=0$,
+%\begin{equation*}
+%g(K) = \frac{1}{24(f+b)(K+b)}\alpha^2 \texttt{ , }\zeta(K) = \frac{\nu}{\alpha} \left(f-K\right)
+%\end{equation*}
+We have $g(K) = 0$ when $\beta = 1$ and $g(K) = \frac{1}{24(f+b)(K+b)}\alpha^2$ when $\beta = 0$, while $\zeta(K)$ and $x(K)$ are the same as in the normal formula.
 
 When $f=K$, 
 \begin{align}
 \sigma_B(f) &= \alpha (f+b)^{\beta-1} \left[1+\left(g(f)+\frac{1}{4}\rho\nu\alpha\beta(f+b)^{\beta-1}+\frac{1}{24}(2-3\rho^2)\nu^2\right)T\right]
 \end{align}
 
-When $\beta = 1$,
-\begin{align*}
-g(K) = 0 &\texttt{ , } \zeta(K) = \frac{\nu}{\alpha} \log\left(\frac{f+b}{K+b}\right)
-\end{align*}
-
-When $\beta = 0$,
-\begin{align*}
-g(K) = \frac{1}{24(f+b)(K+b)}\alpha^2 &\texttt{ , }\zeta(K) = \frac{\nu}{\alpha} \left(f-K\right)
-\end{align*}
 It is important not to forget that Hagan derived the lognormal formula as an approximation of the normal formula \citep{hagan2002managing}: it won't be accurate or realistic at all in cases where the implied volatility is very high (see Table \ref{tbl:lognormal_high_alpha}). This is not so realistic for market implied volatilities, but it can have an influence in the global minimization procedure, as global minimizers like differential evolution will try out extreme values.
 
 Of course, in order to obtain a lognormal volatility, it is also possible to solve, with high accuracy, for the Black implied volatility of a given normal volatility: we can firstly compute corresponding Bachelier option price with a fast evaluation method \citep{lefloch2014bpvol} and secondly use a robust and accurate Black implied volatility solver \citep{jackel2013let, li2011adaptive}.
@@ -145,7 +151,7 @@ The idea is to find $\alpha, \rho, \nu$ that matches the at-the-money implied vo
 &+ \frac{1}{12\alpha (f+b)^{\beta-1}}\left((1-\beta)^2(\alpha (f+b)^{\beta-1})^2 + \nu^2(2-3\rho^2)\right)z^2
 \end{align}
 
-This is the same expansion used in \citep[equation (3.1a)]{hagan2002managing} to explain the phenomenology and dynamic of the SABR model. It can also be found from the expansion of \citep{lorig2014implied} by using the order-0 expansion for the at-the-money implied volatility, the order-1 expansion for the at-the-money skew, and the order-2 for the at-the-money curvature and ignore terms quadratic in time to expiry $T^2$. Or more simply it can be rederived from a Taylor expansion, neglecting higher order terms as in Appendix \ref{apx:normal_expansion}. We have then:
+This is the same expansion used in \citep[equation (3.1a)]{hagan2002managing} to explain the phenomenology and dynamic of the SABR model. It can also be found from the expansion of \citep{lorig2014implied} by using the order-0 expansion for the at-the-money implied volatility, the order-1 expansion for the at-the-money skew, and the order-2 for the at-the-money curvature and ignore terms quadratic in time to expiry $T^2$. Or more simply it can be rederived from a Taylor expansion, neglecting higher order terms as in Appendix \ref{apx:normal_expansion}. We then have:
 % expansions obtained with the formula from \citep{lorig2014implied}. Applied to the shifted SABR model, their second order expansion of the implied volatility $v$ is $v = v_0 + v_1 + v_2$ where 
 %lorig formula for order 2 %
 %\begin{align*}
@@ -156,7 +162,7 @@ This is the same expansion used in \citep[equation (3.1a)]{hagan2002managing} to
 %&+ \frac{1}{96}T\nu^2 v_0 \left(32 + 5T\nu^2 - 12 \rho^2 + 2T v_0((6\rho^2-2)v_0-7\nu\rho) \right)\\
 %&- \frac{1}{24}T\nu^2\rho (\nu-3\rho v_0) z+\frac{\nu^2(2-3\rho^2)}{12}z^2
 %\end{align*}
-% We use the order-0 expansion for the at-the-money implied volatility, the order-1 expansion for the at-the-money skew, and the order-2 for the at-the-money curvature and ignore terms quadratic in time to expiry $T^2$. Note that the derivatives are expressed in log-moneyness towards the variable $z=\log(\frac{K+b}{f+b})$ where $K$ is the strike and $f$ is the forward. We have then:
+% We use the order-0 expansion for the at-the-money implied volatility, the order-1 expansion for the at-the-money skew, and the order-2 for the at-the-money curvature and ignore terms quadratic in time to expiry $T^2$. Note that the derivatives are expressed in log-moneyness towards the variable $z=\log(\frac{K+b}{f+b})$ where $K$ is the strike and $f$ is the forward. We then have:
 \begin{align}
 \begin{cases}
 \sigma_0 &= \alpha(f+b)^{\beta-1}\\
@@ -174,7 +180,8 @@ This system can be exactly solved to give a first guess $\alpha_0, \rho_0,\nu_0$
 \rho_0 &= \frac{1}{\nu_0}\left(2\sigma_0'+(1-\beta)\sigma_0\right) 
 \end{cases} 
 \end{align}
-If $\nu_0^2 < 0$, we force $\rho_0$ in $\lbrace-1,1\rbrace$ with $\rho_0 = \sgn\left(2\sigma_0'+(1-\beta)\sigma_0\right)$, and recompute $\nu_0$ ignoring the curvature through $\nu_0 =\frac{1}{\rho_0}\left(2\sigma_0'+(1-\beta)\sigma_0\right)$. In practice, this allows to find a good initial guess even when the optimal $\rho$ is near -1 and when the smile has very little curvature. We then refine this first guess by solving exactly for the at-the-money volatility with the given $\rho_0$ and $\nu_0$. $\alpha_1$ is the root of the following third order polynomial:
+If $\nu_0^2 < 0$, we force $\rho_0$ in $\lbrace-1,1\rbrace$ with $\rho_0 = \sgn\left(2\sigma_0'+(1-\beta)\sigma_0\right)$, and recompute $\nu_0$ ignoring the curvature through $\nu_0 =\frac{1}{\rho_0}\left(2\sigma_0'+(1-\beta)\sigma_0\right)$. In practice, this allows to find a good initial guess even when the optimal $\rho$ is near -1 and when the smile has very little curvature. We then refine this first guess by solving exactly for the at-the-money volatility with the given $\rho_0$ and $\nu_0$. $\alpha_1$ is the root of the following third order polynomial: 
+%\footnote{The root can be determined using Cardano's formula}:
 \begin{align}
 \frac{(1-\beta)^2 T}{24 (f+b)^{2-2\beta}}\alpha^3+ \frac{\rho\beta\nu T}{4(f+b)^{1-\beta}}\alpha^2 + \left(1+\frac{2-3\rho^2}{24}\nu^2 T\right)\alpha - \sigma_0 (f+b)^{1-\beta} &= 0
 \end{align}
@@ -251,11 +258,6 @@ Another approach would be to repeat the initial guess procedure with a parabola 
 In our numerical tests we will select the guess that gives the minimum mean square error in volatilities between the two guesses stemming from the 3-points parabola and the 7-points parabola.
 \section{Almost exact inversion of SABR smiles}
 We use the SABR parameters found by calibration of the lognormal SABR model on the S\&P500 options in December 2008 as starting point (Table \ref{tbl:smart_initialguess_sabr_input}). From those we regenerate a discrete set of implied volatilities for 12 strikes and 11 expiries using the lognormal SABR formula with $\beta = 1$. And finally we apply the explicit initial guess procedure to each expiry.
-
-%add guess alpha1 parameters in following table
-%      REFERENCE     EXPLICIT GUESS
-% exp  a  r  n       a    r   n
-
 \begin{table}[h]
 \begin{center}
 \caption{\label{tbl:smart_initialguess_sabr_input}Reference SABR parameters with $f=2016$ and explicit guess}
@@ -281,7 +283,7 @@ years & $\alpha$ & $\rho$ & $\nu$ & $\alpha$ & $\rho$ & $\nu$ & vol RMSE \\
 \end{table}
 
 The root mean square error in implied volatilities of the fit is always lower than $3\cdot 10^{-4}$. $\rho, \nu$ are recovered with an accuracy higher than $5\cdot 10^{-3}$ and $\alpha$ is recovered with and accuracy higher than $10^{-4}$, independently of the expiry (see Table \ref{tbl:smart_initialguess_sabr_input}). The refinement $\alpha_1$ allows to gain one order of magnitude in accuracy over $\alpha_0$, we display the various stages of the initial guess procedure on the slice of expiry 0.479 on Figure \ref{fig:smart_initialguess_sabr_input}.
-\begin{figure}[htbp]
+\begin{figure}[h]
   \caption{\label{fig:smart_initialguess_sabr_input}The various stages of the initial guess method for the slice of expiry 0.479 year}
 \begin{center}
  \includegraphics[width=16cm]{explicit_fit_sabr_0479_beta1.eps}
@@ -291,7 +293,7 @@ The root mean square error in implied volatilities of the fit is always lower th
 \section{Real world smiles}
 \subsection{Calibration on the analytic formula}
 \subsubsection{Equity option smiles}
-To calibrate SABR to equity implied volatility surfaces from December 2012, we minimize the weighted root mean square error in implied volatilities with the Levenberg-Marquardt method \citep{levenberg1944method,marquardt1963algorithm}, placing more weight to volatilities around ATM +/- 20\%. We compare the results obtained using either our explicit method as initial guess, or alternatively a guess found by running the differential evolution algorithm \citep{storn1997differential} with a population size 20 on 1000 generations. The resulting mean square error is displayed in Figure \ref{fig:explicit_de_equity_error}.
+To calibrate SABR to equity implied volatility surfaces from December 2012, we minimize the weighted root mean square error in implied volatilities with a simple Gauss-Newton (GN) method adapted to handle rank-deficient systems (see Appendix \ref{apx:gaussnewton}), placing more weight to volatilities around ATM +/- 20\%. We compare the results obtained using either our explicit method as initial guess, or alternatively a guess found by running the differential evolution algorithm \citep{storn1997differential} with a population size 20 on 1000 generations. Of course, instead of using the Gauss-Newton method, it is also possible to rely on the more robust Levenberg-Marquardt method \citep{levenberg1944method,marquardt1963algorithm}. In practice, however, our results would be exactly the same as the initial guess is always close enough so that the refinements of the Levenberg-Marquardt method are not needed. The resulting mean square error is displayed in Figure \ref{fig:explicit_de_equity_error}.
 
 \begin{figure}[!h]
   \caption{\label{fig:explicit_de_equity_error}Root mean square error of calibration per expiry on various equity surfaces}
@@ -308,45 +310,54 @@ The minimization on the explicit guess leads to a mean square error in implied v
 \end{center}
 \end{figure}
 
-
-\subsubsection{Two SABRs for the same smile}
-Figure \ref{fig:two_sabr_1_smile} illustrates how two different sets of SABR parameters can lead to an equally good fit. We just picked the S\&P 500 options expiring in 4 years used in the previous section. The root mean square error is  0.00219269910750194 for the SABR parameters with lower $\alpha$ while the one for the higher $\alpha$ is 0.002192699107502103, that is the lower $\alpha$ fits better by only $10^{-16}$.
-
-\begin{figure}[htbp]
-  \caption{\label{fig:two_sabr_1_smile}Smiles corresponding to $\alpha= 0.237, \rho= -0.735, \nu= 0.398$ and $\alpha= 0.850, \rho= -0.742, \nu= 1.335$ with $\beta=1, f=1426.19, T=4$}
+The initial guess is always fairly close to the true minimum: the median number of objective function evaluations in the Gauss-Newton method (corresponding to $n$ SABR formula evaluations for $n$ strikes on a given option expiry) is 3 per calibration (Figure \ref{fig:sabr_fit_iterations}). 
+\begin{figure}[!h]
+  \caption{\label{fig:sabr_fit_iterations}Distribution of objective function evaluations per calibration with Gauss-Newton}
 \begin{center}
- \includegraphics[width=14cm]{two_sabr_1_smile.eps}
+ \includegraphics[width=16cm]{sabr_fit_iterations.eps}
 \end{center}
 \end{figure}
+The number of objective function evaluations per calibration would be nearly the same using the Levenberg-Marquardt method instead of the Gauss-Newton method, except for a few expiries when the optimal $\rho$ is close to -1 and the system almost degenerate, which makes then the Levenberg-Marquardt method slower to converge.
+
+\subsubsection{Two SABRs for the same smile}
+Figure \ref{fig:two_sabr_1_smile} illustrates how two different sets of SABR parameters can lead to an equally good fit. We just picked the S\&P 500 options expiring in 4 years used in the previous section.
+\begin{figure}[h]
+  \caption{\label{fig:two_sabr_1_smile}Smiles corresponding to $\alpha= 0.237, \rho= -0.735, \nu= 0.398$ and $\alpha= 0.850, \rho= -0.742, \nu= 1.335$ with $\beta=1, f=1426.19, T=4$}
+\begin{center}
+ \includegraphics[width=13cm]{two_sabr_1_smile.eps}
+\end{center}
+\end{figure}
+ The root mean square error is  0.00219269910750194 for the SABR parameters with lower $\alpha$ while the one for the higher $\alpha$ is 0.002192699107502103, that is the lower $\alpha$ fits better by only $10^{-16}$.
+ 
 The fact that two different SABR parameters sets can lead to smiles with nearly the same error measure is the root of issues with differential evolution: it is not obvious which set of parameter is the right one without some additional constraint on the variation of the parameters. This can be resolved by some penalty term, but it is difficult in practice to find the correct penalty term that works for a variety of situations. A better approach would be look beyond the best candidate, and consider as alternative initial guesses the other candidates in the latest generation with very similar error measure and different (lower) $\alpha$. In contrast, the explicit guess leads directly to the correct smile.
 
 \subsubsection{Swaption smiles}
-We apply the same calibration methodology as for the equity smiles cases, but relying on the normal formula with $\beta=0.5$ instead. The calibrated parameters are indistinguishable between the calibration on the explicit initial guess and the calibration on the guess found by differential evolution (see Table \ref{tbl:normal_sabr_fit}). Furthermore, the initial guess is very close to the calibration result. 
+We apply the same calibration methodology as for the equity smiles cases, but relying on the normal formula with $\beta=0.5$ instead (Equation \ref{eqn:normal_sabr}). The resulting calibrated parameters are indistinguishable between the minimization on the explicit initial guess and the minimization on the guess found by differential evolution (see Table \ref{tbl:normal_sabr_fit}). Furthermore, the initial guess is very close to the calibration result. 
 
 \begin{table}[h]
 \begin{center}
-\caption{\label{tbl:normal_sabr_fit}calibrated SABR parameters with $\beta=0.5$. LM denotes Levenberg-Marquardt minimization.}
+\caption{\label{tbl:normal_sabr_fit}calibrated SABR parameters with $\beta=0.5$. GN denotes the Gauss-Newton minimization.}
 \begin{tabular}{c c c c c c}
 \hline
 Method & $\alpha$ & $\rho$ &$\nu$ & normal vol RMSE & time(ms) \\
 \hline
 \multicolumn{6}{c}{1m5y swaption in May 2014, $f=0.0184$}\\
 \hline
-Explicit & 0.052 & 0.458 & 0.751 & 2.95e-04 & 0.01 \\
-Explicit + LM  & 0.052 & 0.368 & 0.768 & 2.39e-04 & 0.11\\
-Differential Evolution + LM  & 0.052 & 0.368 & 0.768 & 2.39e-04 & 5.17 \\
+Explicit & 0.052 & 0.404 & 0.837 & 3.19e-04 & 0.01 \\
+Explicit + GN  & 0.052 & 0.368 & 0.768 & 2.39e-04 & 0.05\\
+Differential Evolution + GN  & 0.052 & 0.368 & 0.768 & 2.39e-04 & 5.03\\
 \hline
 \multicolumn{6}{c}{2y5y swaption in May 2014, $f=0.0309$}\\
 \hline
-Explicit & 0.052 & 0.060 & 0.322 & 1.43e-05 & 0.01 \\
-Explicit + LM & 0.052 & 0.058 & 0.313 & 7.59e-06 & 0.10\\
-Differential Evolution + LM & 0.052 & 0.058 & 0.313 & 7.59e-06 & 1.95\\
+Explicit & 0.052 & 0.070 & 0.311 & 1.52e-05 & 0.01 \\
+Explicit + GN & 0.052 & 0.058 & 0.313 & 7.59e-06 & 0.04\\
+Differential Evolution + GN & 0.052 & 0.058 & 0.313 & 7.59e-06 & 1.84\\
 \hline
 \multicolumn{6}{c}{10y10y swaption in May 2014, $f=0.0398$}\\
 \hline
-Explicit & 0.037 & -0.141 & 0.319 & 2.26e-05 & 0.01 \\
-Explicit + LM  & 0.037 & -0.153 & 0.305 & 4.68e-06 & 0.12\\
-Differential Evolution + LM  & 0.037 & -0.153 & 0.305 & 4.68e-06 & 3.67\\
+Explicit & 0.037 & -0.137 & 0.311 & 1.88e-05 & 0.01 \\
+Explicit + GN  & 0.037 & -0.153 & 0.305 & 4.68e-06 & 0.04\\
+Differential Evolution + GN  & 0.037 & -0.153 & 0.305 & 4.68e-06 & 3.57\\
 \hline
 \end{tabular}
 \end{center}
@@ -355,11 +366,10 @@ Figures \ref{fig:explicit_fit_1m_beta05}, \ref{fig:explicit_fit_2y_beta05} and \
 \begin{figure}[h!]
   \caption{\label{fig:explicit_fit_1m_beta05}Initial guess and calibrated smile for a May 2014 1m5y Swaption }
 \begin{center}
- \includegraphics[width=13cm]{explicit_fit_1m_beta05.eps}
+ \includegraphics[width=11.5cm]{explicit_fit_1m_beta05.eps}
 \end{center}
 \end{figure}
-
-\begin{figure}[htb]
+\begin{figure}[h!]
   \begin{center}  
       \subfigure[\label{fig:explicit_fit_2y_beta05}2y5y Swaption]{
 \includegraphics[width=7cm]{explicit_fit_2y_beta05.eps}}
@@ -374,27 +384,27 @@ Figures \ref{fig:explicit_fit_1m_beta05}, \ref{fig:explicit_fit_2y_beta05} and \
 We calibrate the same swaptions as in the previous section but using the arbitrage free SABR model from \citep{hagan2013arbitrage}. In the calibration procedure there is the need to transform the swaption price resulting from integrating the probability density to a normal volatility, in order to compute the error in terms of normal volatilities. This can be achieved with near machine accuracy using the algorithm from \citep{lefloch2014bpvol}. The transformation to normal volatitilies must be reasonably accurate for extremely low option prices, as even if the options reference prices are not so low, the prices resulting from the best fit procedure can be extremely low.
 
 Short and medium expiries calibrated SABR parameters are very close to the one of the previous section (Table \ref{tbl:arbfree_sabr_fit}).
-\begin{table}[h]
+\begin{table}[hbp]
 \begin{center}
-\caption{\label{tbl:arbfree_sabr_fit}calibrated SABR parameters with $\beta=0.5$ for the arbitrage free SABR model. LM denotes Levenberg-Marquardt minimization.}
+\caption{\label{tbl:arbfree_sabr_fit}calibrated SABR parameters with $\beta=0.5$ for the arbitrage free SABR model. GN denotes the Gauss-Newton minimization.}
 \begin{tabular}{c c c c c c}
 \hline
 Method & $\alpha$ & $\rho$ &$\nu$ & normal vol RMSE & time(s) \\
 \hline
 \multicolumn{6}{c}{1m5y swaption in May 2014}\\
 \hline
-Explicit & 0.052 & 0.458 & 0.751 & 2.87e-04 & 0.005 \\
-Explicit+LM & 0.052 & 0.374 & 0.765 & 2.40e-04 & 0.071\\
+Explicit & 0.052 & 0.404 & 0.837 & 3.13e-04 & 0.005 \\
+Explicit+GN & 0.052 & 0.374 & 0.765 & 2.40e-04 & 0.067\\
 \hline
 \multicolumn{6}{c}{2y5y swaption in May 2014}\\
 \hline
 Explicit & 0.052 & 0.055 & 0.328 & 1.40e-05 & 0.005\\
-Explicit+LM & 0.052 & 0.058 & 0.323 & 6.61e-06 & 0.081\\
+Explicit+GN & 0.052 & 0.058 & 0.323 & 6.61e-06 & 0.038\\
 \hline
 \multicolumn{6}{c}{10y10y swaption in May 2014}\\
 \hline
 Explicit & 0.037 & -0.145 & 0.322 & 7.36e-05 & 0.005\\
-Explicit+LM & 0.037 & -0.194 & 0.359 & 6.97e-06 & 0.068\\
+Explicit+GN & 0.037 & -0.194 & 0.359 & 6.97e-06 & 0.048\\
 \hline
 \end{tabular}
 \end{center}
@@ -405,7 +415,7 @@ There is however a visible difference for the longest expiry. In particular, the
 \begin{figure}[htbp]
   \caption{\label{fig:normal_vs_arbfree_fit_10y10y}Initial guess and calibrated smile for a May 2014 10y10y Swaption using the Arbitrage-free SABR PDE approach }
 \begin{center}
- \includegraphics[width=12cm]{normal_vs_arbfree_fit_10y10y.eps}
+ \includegraphics[width=11.5cm]{normal_vs_arbfree_fit_10y10y.eps}
 \end{center}
 \end{figure}
 
@@ -480,6 +490,40 @@ It can be useful to pin a specific point $(f,\sigma_f)$, for example to make sur
 \sum\limits_{i=1}^{n} w_i x_i^2 y_i
 \end{pmatrix}
 \end{equation}
+
+\section{Moore-Penrose Gauss-Newton least squares minimization}\label{apx:gaussnewton}
+Let $x_k$ represent the SABR parameters $(\alpha,\rho,\nu)$ at step $k$, and $r(x_k)$ the vector of the (weighted) difference between the SABR formula volatilities stemming from $x_k$ and the market volatilities at each market strike considered in the minimization.
+Let $J(x_k)$ be the jacobian at $x_k$:
+\begin{equation}
+J(x_k) = \left( \frac{\partial r}{\partial \alpha}(x_k),  \frac{\partial r}{\partial \rho}(x_k),  \frac{\partial r}{\partial \nu}(x_k)  \right)
+\end{equation} 
+
+The classic Gauss-Newton method for least squares minimization consist in computing iteratively:
+\begin{align}
+x_{k+1} &= x_k - p_k
+\end{align}
+where 
+\begin{align}
+p_k &= \left(J(x_k)^T J(x_k)\right)^{-1} J(x_k)^T r(x_k))
+\end{align}
+It fails if the matrix $H(x_k) = J(x_k)^T J(x_k)$ is singular. In practice, because of limited machine accuracy, it fails also when $H$ is almost singular, that is when some of its eigenvalues are close to zero.
+
+If instead of computing an exact matrix inverse $H^{-1}$, we use a Moore-Penrose pseudo inverse $H^+$, the method will continue to work on rank-deficient problems: it will, in effect, reduce the problem to the dimensions where it is well defined. One can view this as finding the minimum on the edge: the coordinates of the $x_k$ corresponding to near zero eigenvalues in $H$ will stay constant.
+
+To achieve this, we compute the Moore-Penrose inverse by singular value decomposition:
+\begin{equation}
+H^+ = V \Sigma^+ U^T
+\end{equation}
+where the singular value decomposition of $H$ is $H = U \Sigma V^T$, and $\Sigma^+$ is computed by taking the inverse of each element in the diagonal whose absolute value is higher than a tolerance $t$. $t$ is chosen to be $t=\epsilon \max(m,n) \max(\Sigma)$ where $m,n$ are the number of rows and columns of H and $\epsilon$ is the machine epsilon, as in the Matlab/Octave function \texttt{pinv}.
+
+For SABR calibration, the number of dimensions is just 3, and computing the Moore-Penrose pseudo inverse by singular value decomposition has no performance impact. We have found that, even when the initial guess is close to the true minimum, the system could be rank-deficient, especially for long maturity equity smiles where the optimal $\rho$ is close to -1.
+
+To make sure the SABR parameters don't go outside their range $\alpha \geq 0, -1 \geq \rho \geq 1, \nu \geq 0$ we rely on a smooth transformation of the domain. $\mathbb{R}$ is transformed to the interval (a, b) through the sigmoid function $g$ defined as:
+\begin{equation}
+g(x) = a + \frac{b-a}{1+e^{-\frac{x-a}{b-a}}}
+\end{equation}
+It would be also possible to just cap or floor the parameters (making sure the Jacobian is zero over the cap or under the floor), but while this can speed up slightly convergence, it can also have the adverse effect of being stuck too quickly on the edge.
+
 \bibliographystyle{rAMF}
 %\bibliographystyle{ieeetr}
 \bibliography{lefloch_smart_sabr}

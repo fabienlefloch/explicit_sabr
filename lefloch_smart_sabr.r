@@ -50,6 +50,31 @@ ggsave(file="/home/fabien/mypapers/explicit_sabr/explicit_de_equity_error.eps",w
 qplot(expiry, alpha, data=m[m$asset != "1",], color=guess, geom="line")+theme(legend.position="bottom")+facet_wrap(~  asset)
 ggsave(file="/home/fabien/mypapers/explicit_sabr/explicit_de_equity_alpha.eps",width=8,height=7)
 
+#iterations FIXME : does LM evaluate initial guess just to start? are jacob evals = function evals?
+m<-read.table('/home/fabien/mypapers/explicit_sabr/sabr_smart_fit_lm_gn.txt', header=TRUE)
+m$alpha <- as.numeric(as.character(m$alpha))
+m$error <- as.numeric(as.character(m$error))
+m$iterations <- as.numeric(as.character(m$iterations))
+qplot(expiry, error, data=m, color=guess, geom="line", ylab="implied volatility RMSE")+scale_y_log10()+scale_x_log10()+facet_wrap(~  asset)+theme(legend.position="bottom")
+
+qplot(expiry, iterations, data=m, color=guess, geom="point")
+qplot(guess, iterations, data=m, color=guess, geom="boxplot")+scale_y_log10(breaks=c(2,4,8,16,32))+geom_jitter(position=position_jitter(w=0.1,h=0.1) )+theme(legend.position="none")+coord_flip()
+qplot(guess, iterations, data=m[m$guess=='GN',], xlab="", ylab="evaluations", color=asset, geom="boxplot")+scale_y_log10(breaks=c(2,4,8,16,32))+geom_jitter(position=position_jitter(w=0.1,h=0.1) )+theme(legend.position="none")+coord_flip()
+
+qplot(iterations, data=m[m$guess=='GN',] , geom="histogram")+scale_x_discrete(name="function evaluations")+scale_y_continuous(name="volatility slices")+theme(legend.position="none")
+ggsave(file="/home/fabien/mypapers/explicit_sabr/sabr_fit_iterations.eps",width=8,height=2)
+
+m<-read.table('/home/fabien/mypapers/explicit_sabr/sabr_fit_lm_gn3.txt', header=TRUE)
+m$alpha <- as.numeric(as.character(m$alpha))
+m$error <- as.numeric(as.character(m$error))
+qplot(expiry, error, data=m[m$asset != "1",], color=guess, geom="line", ylab="implied volatility RMSE")+scale_y_log10()+theme(legend.position="bottom")+facet_wrap(~  asset)
+
+qplot(expiry, alpha, data=m[m$asset != "1",], color=guess, geom="line", ylab="alpha")+scale_y_log10()+theme(legend.position="bottom")+facet_wrap(~  asset)
+
+n <- m[m$guess == 'LM',]
+n$error = n$error - m[m$guess == 'GN',]$error
+qplot(expiry, abs(error), data=n, color=asset, geom="line", ylab="implied volatility RMSE")+scale_y_log10()
+
 m<-read.table('/home/fabien/mypapers/explicit_sabr/explicit_fit_parabola_5_equity_all_alpha1.txt', header=TRUE)
 m$alpha <- as.numeric(as.character(m$alpha))
 m$RMSE <- as.numeric(as.character(m$RMSE))
