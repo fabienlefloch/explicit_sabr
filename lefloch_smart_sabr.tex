@@ -506,7 +506,7 @@ Figures \ref{fig:explicit_fit_1m_beta05}, \ref{fig:explicit_fit_2y_beta05} and \
 We calibrate the same swaptions as in the previous section but using the arbitrage free SABR model from \citep{hagan2013arbitrage}. In the calibration procedure there is the need to transform the swaption price resulting from integrating the probability density to a normal volatility, in order to compute the error in terms of normal volatilities. This can be achieved with near machine accuracy using the algorithm from \citep{lefloch2014bpvol}. The transformation to normal volatitilies must be reasonably accurate for extremely low option prices, as even if the options reference prices are not so low, the prices resulting from the best fit procedure can be extremely low.
 
 Short and medium expiries calibrated SABR parameters are very close to the one of the previous section (Table \ref{tbl:arbfree_sabr_fit}).
-\begin{table}[hbp]
+\begin{table}[htbp]
 \begin{center}
 \caption{\label{tbl:arbfree_sabr_fit}calibrated SABR parameters with $\beta=0.5$ for the arbitrage free SABR model. GN denotes the Gauss-Newton minimization.}
 \begin{tabular}{c c c c c c}
@@ -538,12 +538,44 @@ Explicit+GN & 0.037 & -0.194 & 0.359 & 6.97e-06 & 0.048\\
 %Explicit & 10.000 & 0.037 & -0.145 & 0.322 & 6.49e-05
 
 
-There is however a visible difference for the longest expiry. In particular, the SABR parameters $\rho, \nu$ have a slightly different meaning: the smile resulting from the normal explicit initial guess is lower for low strikes with the arbitrage free PDE approach than the smile computed from the same guess with the normal formula (Figure \ref{fig:normal_vs_arbfree_fit_10y10y}).
+The longest expiry is the most interesting to look at, as there is then a visible difference in the smiles stemming from the classic formulas and the arbitrage free PDE. In particular, the SABR parameters $\rho, \nu$ have a slightly different meaning: the smile resulting from the normal explicit initial guess is lower for low strikes with the arbitrage free PDE approach than the smile computed from the same guess with the normal formula (Figure \ref{fig:normal_vs_arbfree_fit_10y10y}). 
 
-\begin{figure}[htbp]
+\begin{figure}[hbp]
   \caption{\label{fig:normal_vs_arbfree_fit_10y10y}Initial guess and calibrated smile for a May 2014 10y10y Swaption using the Arbitrage-free SABR PDE approach }
 \begin{center}
  \includegraphics[width=11.5cm]{normal_vs_arbfree_fit_10y10y.eps}
+\end{center}
+\end{figure}
+
+There is also a (smaller) difference between the classic normal and lognormal formulas for the longest expiry. Interestingly, the arbitrage free PDE at-the-money volatility is closer to the one obtained through the classic lognormal formula. Relying on the lognormal initial guess leads in this case to a slightly better initial guess.
+
+The new lognormal formula (Equation \ref{eqn:lognormal_ab}) results in smiles much closer to the arbitrage-free PDE (Figure \ref{fig:lognormal_vs_arbfree_fit_10y10y}). To speed up again the arbitrage-free calibration, the parameters calibrated with local minimization on the new lognormal formula and the explicit guess can in turn be used as initial guess to calibrate the arbitrage free PDE.
+
+\begin{table}[hbp]
+\begin{center}
+\caption{\label{tbl:arbfree_sabr_fit}calibrated SABR parameters with $\beta=0.5$ for the arbitrage free SABR model on the 10y10y swaption of May 2014.}
+\begin{tabular}{c c c c c c}
+\hline
+Method & $\alpha$ & $\rho$ &$\nu$ & normal vol RMSE \\
+\hline
+\multicolumn{5}{c}{Explicit lognormal initial guess}\\
+\hline
+PDE & 0.037 & -0.157 & 0.338 & 4.51e-05 \\
+\hline
+\multicolumn{5}{c}{Gauss-Newton calibration}\\
+\hline
+Classic & 0.037 & -0.159 & 0.315 & 7.10e-07\\
+New & 0.037 & -0.193 & 0.355 & 7.13e-07\\
+PDE & 0.037 & -0.194 & 0.359 & 6.97e-06\\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\begin{figure}[htbp]
+  \caption{\label{fig:lognormal_vs_arbfree_fit_10y10y}Initial guess and calibrated smile for a May 2014 10y10y Swaption using the Arbitrage-free SABR PDE approach and the new lognormal formula }
+\begin{center}
+ \includegraphics[width=11.5cm]{lognormalab_vs_arbfree_fit_10y10y.eps}
 \end{center}
 \end{figure}
 
