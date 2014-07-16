@@ -21,7 +21,7 @@
 \affil{$^\star$Calypso Technology, 106 rue de La Bo\'{e}tie, 75008 Paris\\$^\dag$Clarus Financial Technology, London}
 %
 \date{\today}
-\received{v1.1 released June 2014}
+\received{v1.2 released July 2014}
 
 \maketitle
 \newcommand{\sgn}{\mathop{\mathrm{sgn}}}
@@ -42,7 +42,7 @@ A first calibration method was described in \citep{west2005calibration}, fitting
 In contrast, the method proposed here is simple and explicit; a system of equations to fit the at-the-money volatility, skew, and curvature is solved analytically. A similar approach was applied to the Heston model in \citep{forde2012small} with the difference that, in their case, the Heston parameters describe a full volatility surface and the initial guess procedure relies on two expiries plus the short time at-the-money volatility to solve the 5 Heston parameters exactly. In the SABR case, there is just one expiry to consider and 3 parameters to fit. We will first present our method for the lognormal formula as well as for the normal formula, and then show its accuracy in calibrating real world smiles on the arbitrage-free model from \citet{hagan2013arbitrage} compared to a global optimization via differential evolution.
 
 
-\section{SABR normal and lognormal formulas}
+\section{Classic SABR normal and lognormal formulas}
 
 \subsection{The SABR model}
 In the shifted SABR model, the asset forward follows the following stochastic differential equation:
@@ -60,14 +60,16 @@ Given the low rates environment we currently experience, it is now common practi
 for $f \neq K$ and $\beta \in [0,1]$
 \begin{align}
 \label{eqn:normal_sabr}
-\sigma_N(K) &= \frac{f-K}{x(K)}\left[1+\left(g(K)+\frac{1}{4}\rho\nu\alpha\beta(f+b)^{\frac{\beta-1}{2}}(K+b)^{\frac{\beta-1}{2}}+\frac{1}{24}(2-3\rho^2)\nu^2\right)T\right]
+\sigma_N(K) &= \frac{f-K}{x(\zeta(K))}\left[1+\left(g(K)+\frac{1}{4}\rho\nu\alpha\beta(f+b)^{\frac{\beta-1}{2}}(K+b)^{\frac{\beta-1}{2}}+\frac{1}{24}(2-3\rho^2)\nu^2\right)T\right]
 \end{align}
 with 
-\begin{align*}
+\begin{align}
 g(K) &= \frac{1}{24} (\beta^2-2\beta) (f+b)^{\beta-1} (K+b)^{\beta-1} \alpha^2\\
+\label{eqn:lognormal_zeta}
 \zeta(K) &= \frac{\nu}{\alpha (1-\beta)} \left( (f+b)^{1-\beta} - (K+b)^{1-\beta} \right)\\
-x(K) &= \frac{1}{\nu}\log\left(\frac{\sqrt{1-2\rho\zeta(K)+\zeta^2(K)}-\rho+\zeta(K)}{1-\rho} \right)
-\end{align*}
+\label{eqn:lognormal_x}
+x(\zeta) &= \frac{1}{\nu}\log\left(\frac{\sqrt{1-2\rho\zeta+\zeta^2}-\rho+\zeta}{1-\rho} \right)
+\end{align}
 
 When $\beta = 1$,
 \begin{align*}
@@ -93,25 +95,18 @@ When $f=K$,
 The lognormal formula is very similar to the normal formula, $f-K$ becomes $\log(\frac{f}{K})$ and $g$ includes a small adjustment:
 
 for $f \neq K$ and $\beta \in [0,1]$,
-\begin{align}
-\sigma_B(K) &= \frac{1}{x(K)}\log\left(\frac{f+b}{K+b}\right)\left[1+\left(g(K)+\frac{1}{4}\rho\nu\alpha\beta(f+b)^{\frac{\beta-1}{2}}(K+b)^{\frac{\beta-1}{2}}+\frac{1}{24}(2-3\rho^2)\nu^2\right)T\right]
+\begin{align}\label{eqn:lognormal_sabr}
+\sigma_B(K) &= \frac{1}{x(\zeta(K))}\log\left(\frac{f+b}{K+b}\right)\left[1+\left(g(K)+\frac{1}{4}\rho\nu\alpha\beta(f+b)^{\frac{\beta-1}{2}}(K+b)^{\frac{\beta-1}{2}}+\frac{1}{24}(2-3\rho^2)\nu^2\right)T\right]
 \end{align}
 with 
-\begin{align*}
-g(K) &= \frac{1}{24} (\beta-1)^2 (f+b)^{\beta-1} (K+b)^{\beta-1} \alpha^2\\
-\zeta(K) &= \frac{\nu}{\alpha (1-\beta)} \left( (f+b)^{1-\beta} - (K+b)^{1-\beta} \right)\\
-x(K) &= \frac{1}{\nu}\log\left(\frac{\sqrt{1-2\rho\zeta(K)+\zeta^2(K)}-\rho+\zeta(K)}{1-\rho} \right)
-\end{align*}
-%When $\beta=1$,
-%\begin{equation*}
-%g(K) = 0 \texttt{ , } \zeta(K) = \frac{\nu}{\alpha} \log\left(\frac{f+b}{K+b}\right)
-%\end{equation*}
-%
-%When $\beta=0$,
-%\begin{equation*}
-%g(K) = \frac{1}{24(f+b)(K+b)}\alpha^2 \texttt{ , }\zeta(K) = \frac{\nu}{\alpha} \left(f-K\right)
-%\end{equation*}
-We have $g(K) = 0$ when $\beta = 1$ and $g(K) = \frac{1}{24(f+b)(K+b)}\alpha^2$ when $\beta = 0$, while $\zeta(K)$ and $x(K)$ are the same as in the normal formula.
+\begin{align}
+g(K) &= \frac{1}{24} (\beta-1)^2 (f+b)^{\beta-1} (K+b)^{\beta-1} \alpha^2
+\end{align}
+and $\zeta(K), x(\zeta)$ as in equations (\ref{eqn:lognormal_zeta}) and (\ref{eqn:lognormal_x}).
+
+When $\beta = 1$, $g(K) = 0$. 
+
+When $\beta = 0$, $g(K) = \frac{\alpha^2}{24(f+b)(K+b)}$.
 
 When $f=K$, 
 \begin{align}
@@ -125,7 +120,7 @@ Of course, in order to obtain a lognormal volatility, it is also possible to sol
 \begin{table}[h]
 \begin{center}
 \caption{\label{tbl:lognormal_high_alpha}Black volatility obtained from the direct lognormal approximation compared the one solved from the normal approximation using $\alpha=3.24,\beta=1.0,\rho=-0.998, \nu=1.69, f=2014, K=f, T=0.48$.}
-\begin{tabular}{|c|c|c|}
+\begin{tabular}{c c c}
 \hline
 Formula & Black volatility & Option price \\ 
 \hline
@@ -142,6 +137,133 @@ For performance reasons, we prefer to rely on the normal formula if the calibrat
 %\subsection{Latest Hagan normal formula}
 %mention of latest Hagan formula 2014
 
+\section{Andersen \& Brotherton-Ratcliffe expansions}
+As explained in \citep{lefloch2014fdmsabr}, the arbitrage-free SABR method from \citet{hagan2013arbitrage} is equivalent to a local volatility expansion where the vanilla call option prices follow the normal forward Dupire PDE:
+
+\begin{equation}\label{eqn:forward-dupire}
+\frac{\partial V_{call}}{\partial T}(T,K) = \frac{1}{2}\vartheta^2(T,K) \frac{\partial^2 V_{call}}{\partial K^2}(T,K)
+\end{equation} 
+with initial condition $V_{call}(0, K) = (f-K)^{+}$ and
+\begin{alignat}{3}
+\vartheta(T,K) = D(K) E(T,K) \text{, } E(T,K) = e^{\frac{1}{2}\rho\nu\alpha\Gamma(K) T} \text{, } \Gamma(K) = \frac{(K+b)^{\beta}-(f+b)^{\beta}}{K-f}\\
+D(K) = \sqrt{\alpha^2 +2\alpha\rho\nu y(K)+ \nu^2 y(K)^2} K^{\beta} \text{, } y(K) = \frac{(K+b)^{1-\beta}-(f+b)^{1-\beta}}{1-\beta}
+\end{alignat}
+
+Following the same idea as in \citep{karlsmark2013sabr}, normal and lognormal implied volatility expansions can be obtained from the local volatility using the technique of \citep{andersen2005extended}. The first step is to remove the time dependency by a change of variable:
+\begin{equation}
+u(T) = \int_{0}^{T}E^2(t,K)dt = \frac{e^{\rho\nu\alpha\Gamma(K) T} - 1}{\rho\nu\alpha\Gamma(K)}
+\end{equation}
+The PDE becomes:
+\begin{equation}\label{eqn:forward-dupire-transformed}
+\frac{\partial V_{call}}{\partial u}(u,K) = \frac{1}{2}D^2(K) \frac{\partial^2 V_{call}}{\partial K^2}(u,K)
+\end{equation} 
+\subsection{A new lognormal formula}
+Applying \citet[proposition B.1]{andersen2005extended} to equation (\ref{eqn:forward-dupire-transformed}) gives the following lognormal expansion of the volatility:
+\begin{equation}
+\Omega(u, K) = \Omega_0(K) + \Omega_1(K) u + \mathcal{O}(u^2)
+\end{equation}
+with 
+\begin{align}
+\Omega_0(K) &= \frac{\log\left(\frac{f+b}{K+b}\right)}{\int_K^f D^{-1}(k)dk} \\
+\Omega_1(K) &= - \frac{\Omega_0(K)}{\left(\int_K^f D^{-1}(k)dk\right)^2}\log\left(\Omega_0(K)\sqrt{\frac{(f+b) (K+b)}{D(f)D(K)}}\right)
+\end{align}
+
+Those terms can be computed analytically as
+\begin{align}
+\int_K^f D^{-1}(k)dk = \frac{1}{\nu}\log\left(\frac{\sqrt{1 +2 \rho\frac{\nu}{\alpha} y(K) + \frac{\nu^2}{\alpha^2} y^2(K)}-\rho -\frac{\nu}{\alpha} y(K)}{1-\rho} \right)
+\end{align}
+
+Let's define $\zeta(K) = -\frac{\nu}{\alpha} y(K) = \frac{\nu}{\alpha(1-\beta)}\left( (f+b)^{1-\beta}-(K+b)^{1-\beta}\right)$, that is the same $\zeta$ as in the classic lognormal formula  (Equation \ref{eqn:lognormal_zeta}, we have:
+\begin{align}
+\int_K^f D^{-1}(k)dk = x(\zeta(K))
+\end{align}
+where $x$ is defined as in the classic lognormal formula (Equation \ref{eqn:lognormal_x}).
+We go back to the variable $T$ using $\sigma(K,T)^2 T = \Omega(K,u(T))^2 u(T)$, which leads to the following lognormal implied volatility expansion:
+\begin{equation}
+\sigma(K,T) = \frac{\Omega_0(K) u^{\frac{1}{2}}(T) + \Omega_1(K) u^{\frac{3}{2}}(T)}{\sqrt{T}}
+\end{equation}
+As the approximation is only order-1 in time, the exponential term can be expanded as well:
+\begin{equation}
+u(T) = T + \frac{1}{2}\rho\nu\alpha\Gamma(K)T^2 + \mathcal{O}(T^3)
+\end{equation}
+This finally gives the expansion $\sigma_B^{AB}$:
+\begin{equation}\label{eqn:lognormal_ab}
+\sigma_B^{AB}(K) = \Omega_0(K) \left(1+\frac{1}{4}\rho\nu\alpha\Gamma(K)T\right) + \Omega_1(K) T + \mathcal{O}(T^2)
+\end{equation}
+or 
+\begin{equation}\label{eqn:lognormal_ab}
+\sigma_B^{AB}(K) =  \frac{1}{x(\zeta(K))}\log\left(\frac{f+b}{K+b}\right)\left[1+ \left(g(K)+\frac{1}{4}\rho\nu\alpha\Gamma(K) \right)T\right]+ \mathcal{O}(T^2)
+\end{equation}
+with 
+\begin{equation*}
+g(K) =  - \frac{1}{x^2(\zeta(K))}\log\left(\frac{\log\left(\frac{f+b}{K+b}\right)}{x(\zeta(K))}\sqrt{\frac{(f+b) (K+b)}{D(f)D(K)}}\right)
+\end{equation*}
+
+The later formula is particularly interesting since it matches the classic lognormal formula (Equation \ref{eqn:lognormal_sabr}) as well as the formulas found in \citep{hagan2002managing, obloj2008fine} exactly at-the-money while being very close to the arbitrage free PDE solution in practice (see Table \ref{tbl:ab_formulas}, Figure \ref{fig:ab_global_derivative_normal}).
+\begin{table}[h]
+\begin{center}
+\caption{\label{tbl:ab_formulas} Prices and implied volatilities with the various expansions using parameters of \citep{hagan2014arbitragetalk} $\alpha= 0.35, \beta=0.25, \rho=0.25, \nu=1, T=2, f=1$. "classic" denotes the formula from Equation (\ref{eqn:lognormal_sabr}) and "new" corresponds to Equation (\ref{eqn:lognormal_ab}) }
+\begin{tabular}{c c c c}
+\hline
+Strike & Method & Price & Black vol \\ \hline
+%0.0298 & PDE & 5.433E-3 & 22.525\% & 0.762\% \hline
+%0.0298 & $\sigma_B$ & 5.547E-3 &  
+1.0 & PDE & 0.2246 & 40.35\% \\
+1.0 & classic & 0.2274 & 40.87\% \\
+1.0 & new & 0.2274 & 40.87\% \\ \hline
+1.5 & PDE & 0.1092 & 42.91\% \\
+1.5 & classic & 0.1265 & 46.15\% \\
+1.5 & new & 0.1088 & 42.85\% \\ \hline
+\end{tabular}
+\end{center}
+\end{table}
+\subsection{A new normal formula}
+Applying \citet[proposition B.2]{andersen2005extended} to equation (\ref{eqn:forward-dupire-transformed}) gives the following normal expansion of the volatility:
+\begin{equation}
+\Omega(u, K) = \Omega_0(K) + \Omega_1(K) u + \mathcal{O}(u^2)
+\end{equation}
+with 
+\begin{align}
+\Omega_0(K) &= \frac{f-K}{\int_K^f D^{-1}(k)dk} \\
+\Omega_1(K) &= - \frac{\Omega_0(K)}{\left(\int_K^f D^{-1}(k)dk\right)^2}\log\left(\frac{\Omega_0(K)}{\sqrt{D(f)D(K)}}\right)
+\end{align}
+This results in the normal volatility expansion:
+\begin{equation}
+\sigma(K,T) = \frac{\Omega_0(K) u^{\frac{1}{2}}(T) + \Omega_1(K) u^{\frac{3}{2}}(T)}{\sqrt{T}}
+\end{equation}
+Expanding the exponential term, we finally have:
+\begin{equation}\label{eqn:normal_ab}
+\sigma_N^{AB}(K) =  \frac{f-K}{x(\zeta(K))}\left[1+ \left(g(K)+\frac{1}{4}\rho\nu\alpha\Gamma(K) \right)T\right]+ \mathcal{O}(T^2)
+\end{equation}
+with 
+\begin{equation*}
+g(K) = - \frac{1}{x^2(\zeta(K))}\log\left(\frac{f-K}{x(\zeta(K))\sqrt{D(f)D(K)}}\right)
+\end{equation*}
+ and $\zeta(K), x(\zeta)$ defined as in equations (\ref{eqn:lognormal_zeta}) and (\ref{eqn:lognormal_x}).
+
+Again, $\sigma_N^{AB}$ matches the classic normal formula (Equation \ref{eqn:normal_sabr}) as well as the formula from \citep{hagan2002managing} exactly at the money.
+%Method Strike Price Black Normal
+%PDE 0.0298 0.005432912163826728 0.22525223183206733 0.0076231592110094564
+%Lognormal 0.0298 0.005546558189142296 0.22827823236281458 0.0077212292070708835
+%Normal 0.0298 0.00560048968980559 0.2297137949463801 0.007767695498833137
+%LognormalAB 0.0298 0.005442202993580636 0.225499668192926 0.007631184705537535
+%NormalAB 0.0298 0.005470655027548533 0.22625734930523536 0.007655752812655168
+%PDE 0.0398 0.009848170602718608 0.1993927005632324 0.007806304676247139
+%Lognormal 0.0398 0.00986001439947946 0.19964061836118197 0.007815692844849056
+%Normal 0.0398 0.009890559279588493 0.20028013437568054 0.007839904716276703
+%LognormalAB 0.0398 0.009860014399479462 0.199640618361182 0.007815692844849058
+%NormalAB 0.0398 0.009890559279588493 0.20028013437568054 0.007839904716276703
+%PDE 0.049800000000000004 0.006202303898887808 0.18841735704828097 0.008283279556345145
+%Lognormal 0.049800000000000004 0.006200067723948929 0.18837268395258064 0.008281372992976068
+%Normal 0.049800000000000004 0.006226528127172765 0.18890126005319985 0.008303929051130352
+%LognormalAB 0.049800000000000004 0.006212526953778224 0.18862158062106926 0.008291994921957547
+%NormalAB 0.049800000000000004 0.006240135057325597 0.18917304383772227 0.008315524757769022
+\begin{figure}[h]
+  \caption{\label{fig:ab_global_derivative_normal}Implied normal volatilities using parameters of \citep{hagan2014arbitragetalk} $\alpha= 0.35, \beta=0.25, \rho=0.25, \nu=1, T=2, f=1$.}
+\begin{center}
+ \includegraphics[width=14cm]{ab_global_derivative_normal.eps}
+\end{center}
+\end{figure}
 \section{Explicit initial guess}
 \subsection{Lognormal volatility}
 The idea is to find $\alpha, \rho, \nu$ that matches the at-the-money implied volatility $\sigma_0$, skew $\sigma_0'$ and curvature $\sigma_0''$. A direct application of Hagan formula would lead to a system of trivariate polynomials of degrees 3 and 4, which would then require a numerical method. Instead, we rely a simple lower order expansion of the lognormal formula in the variable $z=\log\left(\frac{K+b}{f+b}\right)$ around $z=0$ that still captures the smile around the at-the-money level accurately:
@@ -151,7 +273,7 @@ The idea is to find $\alpha, \rho, \nu$ that matches the at-the-money implied vo
 &+ \frac{1}{12\alpha (f+b)^{\beta-1}}\left((1-\beta)^2(\alpha (f+b)^{\beta-1})^2 + \nu^2(2-3\rho^2)\right)z^2
 \end{align}
 
-This is the same expansion used in \citep[equation (3.1a)]{hagan2002managing} to explain the phenomenology and dynamic of the SABR model. It can also be found from the expansion of \citep{lorig2014implied} by using the order-0 expansion for the at-the-money implied volatility, the order-1 expansion for the at-the-money skew, and the order-2 for the at-the-money curvature and ignore terms quadratic in time to expiry $T^2$. Or more simply it can be rederived from a Taylor expansion, neglecting higher order terms as in Appendix \ref{apx:normal_expansion}. We then have:
+This is the same expansion used in \citep[equation (3.1a)]{hagan2002managing} to explain the phenomenology and dynamic of the SABR model. It can also be found from the expansion of \citep{lorig2014implied} by using the order-0 expansion for the at-the-money implied volatility, the order-1 expansion for the at-the-money skew, and the order-2 for the at-the-money curvature and ignore terms quadratic in time to expiry $T^2$. Or more simply it can be rederived from a Taylor expansion of Equation (\ref{eqn:lognormal_sabr}), neglecting higher order terms as in Appendix \ref{apx:normal_expansion}. Note that the new lognormal formula (Equation \ref{eqn:lognormal_ab}) would also lead to the same expansion. We then have:
 % expansions obtained with the formula from \citep{lorig2014implied}. Applied to the shifted SABR model, their second order expansion of the implied volatility $v$ is $v = v_0 + v_1 + v_2$ where 
 %lorig formula for order 2 %
 %\begin{align*}
@@ -180,8 +302,7 @@ This system can be exactly solved to give a first guess $\alpha_0, \rho_0,\nu_0$
 \rho_0 &= \frac{1}{\nu_0}\left(2\sigma_0'+(1-\beta)\sigma_0\right) 
 \end{cases} 
 \end{align}
-If $\nu_0^2 < 0$, we force $\rho_0$ in $\lbrace-1,1\rbrace$ with $\rho_0 = \sgn\left(2\sigma_0'+(1-\beta)\sigma_0\right)$, and recompute $\nu_0$ ignoring the curvature through $\nu_0 =\frac{1}{\rho_0}\left(2\sigma_0'+(1-\beta)\sigma_0\right)$. In practice, this allows to find a good initial guess even when the optimal $\rho$ is near -1 and when the smile has very little curvature. We then refine this first guess by solving exactly for the at-the-money volatility with the given $\rho_0$ and $\nu_0$. $\alpha_1$ is the root of the following third order polynomial: 
-%\footnote{The root can be determined using Cardano's formula}:
+If $\nu_0^2 < 0$, we force $\rho_0$ in $\lbrace-1,1\rbrace$ with $\rho_0 = \sgn\left(2\sigma_0'+(1-\beta)\sigma_0\right)$, and recompute $\nu_0$ ignoring the curvature through $\nu_0 =\frac{1}{\rho_0}\left(2\sigma_0'+(1-\beta)\sigma_0\right)$. In practice, this allows to find a good initial guess even when the optimal $\rho$ is near -1 and when the smile has very little curvature. We then refine this first guess by solving exactly for the at-the-money volatility with the given $\rho_0$ and $\nu_0$. $\alpha_1$ is the root of the following third order polynomial \footnote{The root can be determined using Cardano's formula}:
 \begin{align}
 \frac{(1-\beta)^2 T}{24 (f+b)^{2-2\beta}}\alpha^3+ \frac{\rho\beta\nu T}{4(f+b)^{1-\beta}}\alpha^2 + \left(1+\frac{2-3\rho^2}{24}\nu^2 T\right)\alpha - \sigma_0 (f+b)^{1-\beta} &= 0
 \end{align}
@@ -201,12 +322,13 @@ When the input volatilities are normal (bpvol), we can just convert them to equi
 \end{align}
 with $v_0 = \frac{\sigma_N}{f}$ and $z=\log(\frac{K}{f})$, where the last term is of order-3.
 
-Instead, we prefer to work directly with normal volatility and derive a simple expansion of the normal formula in $z=\log\left(\frac{K+b}{f+b}\right)$ around $z=0$ (see Appendix \ref{apx:normal_expansion});
+Instead, we prefer to work directly with normal volatility and derive a simple expansion of the normal formula (Equation \ref{eqn:normal_sabr}) in $z=\log\left(\frac{K+b}{f+b}\right)$ around $z=0$ (see Appendix \ref{apx:normal_expansion});
 
 \begin{align}
 \sigma_N(z) &= \alpha (f+b)^\beta + \frac{1}{2}\left(\rho \nu (f+b)+\beta \alpha (f+b)^\beta \right)z\nonumber\\
 &+ \left[\frac{1}{12\alpha (f+b)^{\beta-2}}(2\nu^2-3\rho^2 \nu^2)+\frac{1}{4} \rho \nu (f+b)+\frac{1}{12}(\beta^2+\beta)\alpha (f+b)^\beta \right]z^2
 \end{align}
+The new normal formula (Equation \ref{eqn:normal_ab}) would also lead to the same expansion.
 
 Let $\sigma_0, \sigma_0', \sigma_0''$ be respectively the normal volatility, the slope and the curvature at the money expressed in log-moneyness $z$. We have:
 
@@ -409,6 +531,12 @@ Explicit+GN & 0.037 & -0.194 & 0.359 & 6.97e-06 & 0.048\\
 \end{tabular}
 \end{center}
 \end{table}
+%ABT
+%method expiry alpha rho nu error
+%Explicit+LM & 10.000 & 0.037 & -0.193 & 0.355 & 7.13e-07
+%DifferentialEvolution+LM & 10.000 & 0.037 & -0.193 & 0.355 & 7.13e-07
+%Explicit & 10.000 & 0.037 & -0.145 & 0.322 & 6.49e-05
+
 
 There is however a visible difference for the longest expiry. In particular, the SABR parameters $\rho, \nu$ have a slightly different meaning: the smile resulting from the normal explicit initial guess is lower for low strikes with the arbitrage free PDE approach than the smile computed from the same guess with the normal formula (Figure \ref{fig:normal_vs_arbfree_fit_10y10y}).
 

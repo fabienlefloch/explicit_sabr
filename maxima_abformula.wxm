@@ -1,0 +1,30 @@
+assume(alpha > 0);
+assume(nu>0);
+z(y) := nu/log((sqrt(1+2*rho*nu/alpha*y+nu^2*y^2/alpha^2)-rho-nu*y/alpha)/(1-rho));
+y(K) := (K^(1-beta) - f^(1-beta))/(1-beta);
+M0(K) := log(f/K)*z(y(K));
+taylor(M0(K),K,f,1);
+psi(K) := sqrt(alpha^2+2*alpha*rho*nu*y(K)+nu^2*y(K)^2)*K^beta;
+M1(K) := -M0(K)*z(y(K))^2*log(M0(K)*sqrt(K*f/(psi(K)*psi(f))));
+taylor(M1(K),K,f,1);
+gamma(K) := (K^beta - f^beta)/(K-f)
+taylor(M0(K)*(1+alpha*rho*nu*gamma(K)*T)+M1(K)*T,K,f,2);
+
+M0(K) := (f-K)*z(y(K));
+taylor(M0(K),K,f,1);
+M1(K) := -M0(K)*z(y(K))^2*log(M0(K)*sqrt(1/(psi(K)*psi(f))));
+taylor(M1(K),K,f,1);
+
+
+assume(alpha > 0);
+assume(nu>0);
+xsi(y) := nu/log((sqrt(1+2*rho*nu/alpha*y+nu^2*y^2/alpha^2)-rho-nu*y/alpha)/(1-rho));
+y(z) := ((f*exp(z))^(1-beta) - f^(1-beta))/(1-beta);
+M0(z) := -z*xsi(y(z));
+taylor(M0(z),z,0,2);
+psi(z) := sqrt(alpha^2+2*alpha*rho*nu*y(z)+nu^2*y(z)^2)*(f*exp(z))^beta;
+M1(z) := -M0(z)*xsi(y(z))^2*log(M0(z)*sqrt(f*exp(z)*f/(psi(z)*psi(0))));
+taylor(M1(z),z,0,2);
+g(z) := ((f*exp(z))^beta - f^beta)/(f*exp(z)-f);
+taylor(g(z),z,0,2);
+taylor(M0(z)*(1+alpha*rho*nu*g(z)*T)+M1(z)*T,z,0,2);

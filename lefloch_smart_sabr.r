@@ -61,7 +61,7 @@ qplot(expiry, iterations, data=m, color=guess, geom="point")
 qplot(guess, iterations, data=m, color=guess, geom="boxplot")+scale_y_log10(breaks=c(2,4,8,16,32))+geom_jitter(position=position_jitter(w=0.1,h=0.1) )+theme(legend.position="none")+coord_flip()
 qplot(guess, iterations, data=m[m$guess=='GN',], xlab="", ylab="evaluations", color=asset, geom="boxplot")+scale_y_log10(breaks=c(2,4,8,16,32))+geom_jitter(position=position_jitter(w=0.1,h=0.1) )+theme(legend.position="none")+coord_flip()
 
-qplot(iterations, data=m[m$guess=='GN',] , geom="histogram")+scale_x_discrete(name="function evaluations")+scale_y_continuous(name="volatility slices")+theme(legend.position="none")
+qplot(iterations, data=m[m$guess=='GN',] , geom="histogram", binwidth=1, origin=-0.5)+scale_x_discrete(name="number of function evaluations",breaks=c(0,1,2,3,4,5,6,7,8,9,10))+scale_y_continuous(name="calibrations count")+theme(legend.position="none")
 ggsave(file="/home/fabien/mypapers/explicit_sabr/sabr_fit_iterations.eps",width=8,height=2)
 
 m<-read.table('/home/fabien/mypapers/explicit_sabr/sabr_fit_lm_gn3.txt', header=TRUE)
@@ -151,4 +151,37 @@ m<-read.table('/home/fabien/mypapers/explicit_sabr/normal_vs_arbfree_fit_1m1y.tx
 m$Strike <- as.numeric(as.character(m$Strike))
 m$bpvol <- as.numeric(as.character(m$Volatility))
 qplot(Strike, bpvol, data=m[m$Method != "Reference",], color=Method, geom="line")+geom_point(data=m[m$Method=="Reference",])+theme(legend.position="bottom")
+
+m<-read.table('/home/fabien/mypapers/explicit_sabr/schobelzhu_short_fit.txt', header=TRUE)
+m$Strike <- as.numeric(as.character(m$Strike))
+m$vol <- as.numeric(as.character(m$Volatility))
+qplot(Strike, vol, data=m[m$Method != "Reference",], color=Method, geom="line")+geom_point(data=m[m$Method=="Reference",])+theme(legend.position="bottom")
+
+m<-read.table('/home/fabien/mypapers/explicit_sabr/schobelzhu_fit_sp500_short.txt', header=TRUE)
+m$Strike <- as.numeric(as.character(m$Strike))
+m$vol <- as.numeric(as.character(m$Volatility))
+qplot(Strike, vol, data=m[m$Method != "Reference",], color=Method, geom="line")+geom_point(data=m[m$Method=="Reference",])+theme(legend.position="bottom")+scale_y_continuous(lim=c(0,1))
+
+m<-read.table('/home/fabien/mypapers/explicit_sabr/heston_fit_sp500_short.txt', header=TRUE)
+m$Strike <- as.numeric(as.character(m$Strike))
+m$vol <- as.numeric(as.character(m$Volatility))
+qplot(Strike, vol, data=m[m$Method != "Reference",], color=Method, geom="line")+geom_point(data=m[m$Method=="Reference",])+theme(legend.position="bottom")+scale_y_continuous(lim=c(0,1))
+
+m<-read.table('/home/fabien/mypapers/explicit_sabr/sabr_fit_sp500_short.txt', header=TRUE)
+m$Strike <- as.numeric(as.character(m$Strike))
+m$vol <- as.numeric(as.character(m$Volatility))
+qplot(Strike, vol, data=m[m$Method != "Reference",], color=Method, geom="line")+geom_point(data=m[m$Method=="Reference",])+theme(legend.position="bottom")+scale_y_continuous(lim=c(0,1))
+
+m<-read.table('/home/fabien/mypapers/explicit_sabr/ab_karlsmark.txt', header=TRUE)
+m$Strike <- as.numeric(as.character(m$K))
+m$vol <- as.numeric(as.character(m$vol))
+qplot(Strike, vol, data=m, color=Method, geom="line")+theme(legend.position="bottom")
+
+m<-read.table('/home/fabien/mypapers/explicit_sabr/ab_global_derivative.txt', header=TRUE)
+m$Strike <- as.numeric(as.character(m$Strike))
+m$Black <- as.numeric(as.character(m$Black))
+m$Normal <- as.numeric(as.character(m$Normal))
+qplot(Strike, Normal, data=m, color=Method, ylab="Implied normal volatility", linetype=Method,geom="line")+theme(legend.position="bottom")+scale_color_manual(values=c(2,4,6,3,1))+scale_linetype_manual(values=c(2,5,4,3,1))+theme(legend.position="bottom")
+#+ guides(colour = guide_legend(nrow = 2))
+ggsave(file="/home/fabien/mypapers/explicit_sabr/ab_global_derivative_normal.eps",width=6,height=6)
 
